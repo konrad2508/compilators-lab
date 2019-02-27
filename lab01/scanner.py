@@ -2,38 +2,236 @@ import ply.lex as lex
 
 # TODO kolejnosc operatorow, numer znaku oraz ogarniecie dupy z mainem
 
-tokens = (
-    'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE', 'NEQ',
-    'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES', 'PRINT',
-    'ID', 'INT', 'FLOAT', 'STRING'
-)
-
-t_DOTADD = r'\.\+'
-t_DOTSUB = r'\.-'
-t_DOTMUL = r'\.\*'
-t_DOTDIV = r'\./'
-t_ADDASSIGN = r'\+='
-t_SUBASSIGN = r'-='
-t_MULASSIGN = r'\*='
-t_DIVASSIGN = r'/='
-t_LTE = r'<='
-t_GTE = r'>='
-t_NEQ = r'!='
-t_EQ = r'=='
-t_IF = r'if'
-t_ELSE = r'else'
-t_FOR = r'for'
-t_WHILE = r'while'
-t_BREAK = r'break'
-t_CONTINUE = r'continue'
-t_RETURN = r'return'
-t_EYE = r'eye'
-t_ZEROS = r'zeros'
-t_ONES = r'ones'
-t_PRINT = r'print'
+tokens = ('COMMENT',
+          'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE',
+          'NEQ',
+          'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES', 'PRINT',
+          'ID', 'INT', 'FLOAT', 'STRING'
+          )
 
 literals = "+-*/=<>()[]{}:',;"
 t_ignore = '  \t'
+
+
+def t_COMMENT(t):
+    r'\#.*'
+
+
+def t_DOTADD(t):
+    r'\.\+'
+    return t
+
+
+def t_DOTSUB(t):
+    r'\.-'
+    return t
+
+
+def t_DOTMUL(t):
+    r'\.\*'
+    return t
+
+
+def t_DOTDIV(t):
+    r'\./'
+    return t
+
+
+def t_ADDASSIGN(t):
+    r'\+='
+    return t
+
+
+def t_SUBASSIGN(t):
+    r'-='
+    return t
+
+
+def t_MULASSIGN(t):
+    r'\*='
+    return t
+
+
+def t_DIVASSIGN(t):
+    r'/='
+    return t
+
+
+def t_LTE(t):
+    r'<='
+    return t
+
+
+def t_GTE(t):
+    r'>='
+    return t
+
+
+def t_NEQ(t):
+    r'!='
+    return t
+
+
+def t_EQ(t):
+    r'=='
+    return t
+
+
+def t_IF(t):
+    r'if'
+    return t
+
+
+def t_ELSE(t):
+    r'else'
+    return t
+
+
+def t_FOR(t):
+    r'for'
+    return t
+
+
+def t_WHILE(t):
+    r'while'
+    return t
+
+
+def t_BREAK(t):
+    r'break'
+    return t
+
+
+def t_CONTINUE(t):
+    r'continue'
+    return t
+
+
+def t_RETURN(t):
+    r'return'
+    return t
+
+
+def t_EYE(t):
+    r'eye'
+    return t
+
+
+def t_ZEROS(t):
+    r'zeros'
+    return t
+
+
+def t_ONES(t):
+    r'ones'
+    return t
+
+
+def t_PRINT(t):
+    r'print'
+    return t
+
+
+def t_PLUS(t):
+    r'\+'
+    t.type = '+'
+    return t
+
+
+def t_MINUS(t):
+    r'-'
+    t.type = '-'
+    return t
+
+
+def t_MUL(t):
+    r'\*'
+    t.type = '*'
+    return t
+
+
+def t_DIV(t):
+    r'/'
+    t.type = '/'
+    return t
+
+
+def t_EQUAL(t):
+    r'='
+    t.type = '='
+    return t
+
+
+def t_LESS(t):
+    r'<'
+    t.type = '<'
+    return t
+
+
+def t_GREATER(t):
+    r'>'
+    t.type = '>'
+    return t
+
+
+def t_LPAREN(t):
+    r'\('
+    t.type = '('
+    return t
+
+
+def t_RPAREN(t):
+    r'\)'
+    t.type = ')'
+    return t
+
+
+def t_LSQPAREN(t):
+    r'\['
+    t.type = '['
+    return t
+
+
+def t_RSQPAREN(t):
+    r'\]'
+    t.type = ']'
+    return t
+
+
+def t_LCPAREN(t):
+    r'\{'
+    t.type = '{'
+    return t
+
+
+def t_RCPAREN(t):
+    r'\}'
+    t.type = '}'
+    return t
+
+
+def t_RANGE(t):
+    r':'
+    t.type = ':'
+    return t
+
+
+def t_TRANSPOS(t):
+    r"'"
+    t.type = "'"
+    return t
+
+
+def t_COMMA(t):
+    r'\,'
+    t.type = ','
+    return t
+
+
+def t_SEMICOLON(t):
+    r';'
+    t.type = ';'
+    return t
 
 
 def t_ID(t):
@@ -70,7 +268,7 @@ def t_error(t):
 
 if __name__ == '__main__':
     lexer = lex.lex()
-    fh = open('example_full.txt', "r")
+    fh = open('ex2.txt', "r")
     lexer.input(fh.read())
     for token in lexer:
         print("line %d: %s(%s)" % (token.lineno, token.type, token.value))
