@@ -1,6 +1,6 @@
 import ply.lex as lex
 
-# TODO kolejnosc operatorow, numer znaku oraz ogarniecie dupy z mainem
+# TODO ogarniecie maina (modul w scanner.py ?) oraz przetestowanie dla innych wejsc skanera; wypisanie errora dla blednego wejscia wg opisu cwiczenia
 
 tokens = ('COMMENT',
           'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE',
@@ -15,6 +15,7 @@ t_ignore = '  \t'
 
 def t_COMMENT(t):
     r'\#.*'
+    # do nothing
 
 
 def t_DOTADD(t):
