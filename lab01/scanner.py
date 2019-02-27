@@ -1,6 +1,6 @@
 import ply.lex as lex
 
-# TODO kolejnosc operatorow, i tyle chyba
+# TODO kolejnosc operatorow, numer znaku oraz ogarniecie dupy z mainem
 
 tokens = (
     'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE', 'NEQ',
