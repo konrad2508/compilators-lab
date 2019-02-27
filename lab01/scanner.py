@@ -1,5 +1,7 @@
 import ply.lex as lex
 
+# TODO kolejnosc operatorow, i tyle chyba
+
 tokens = (
     'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE', 'NEQ',
     'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES', 'PRINT',
