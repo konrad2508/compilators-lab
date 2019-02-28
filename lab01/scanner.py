@@ -2,15 +2,25 @@ import ply.lex as lex
 
 # TODO ogarniecie maina (modul w scanner.py ?) oraz przetestowanie dla innych wejsc skanera; wypisanie errora dla blednego wejscia wg opisu cwiczenia
 
-tokens = ('COMMENT',
-          'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN', 'LTE', 'GTE',
-          'NEQ',
-          'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES', 'PRINT',
-          'ID', 'INT', 'FLOAT', 'STRING'
-          )
+tokens = (
+    'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN',
+    'LTE', 'GTE', 'NEQ', 'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES',
+    'PRINT', 'ID', 'FLOAT', 'INT', 'STRING'
+)
 
 literals = "+-*/=<>()[]{}:',;"
-t_ignore = '  \t'
+t_ignore = '\t'
+
+
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+    t.lexer.charno = 1
+
+
+def t_WHITESPACE(t):
+    r'\s+'
+    lexer.charno += len(str(t.value))
 
 
 def t_COMMENT(t):
@@ -240,15 +250,15 @@ def t_ID(t):
     return t
 
 
-def t_INT(t):
-    r'\d+'
-    t.value = int(t.value)
+def t_FLOAT(t):
+    r'(\d*\.\d+E\d+|\d*\.\d+|\d+\.\d*)'
+    t.value = float(t.value)
     return t
 
 
-def t_FLOAT(t):
-    r'\d*\.d+'
-    t.value = float(t.value)
+def t_INT(t):
+    r'\d+'
+    t.value = int(t.value)
     return t
 
 
@@ -257,19 +267,20 @@ def t_STRING(t):
     return t
 
 
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
-
-
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print("Error starting at character '" + str(t.value[0]) + "' at line: " + str(t.lexer.lineno))
     t.lexer.skip(1)
+
+
+def find_column(text, tok):
+    return 1
 
 
 if __name__ == '__main__':
     lexer = lex.lex()
-    fh = open('ex2.txt', "r")
+    lexer.charno = 1
+    fh = open('example_full.txt', "r")
     lexer.input(fh.read())
     for token in lexer:
-        print("line %d: %s(%s)" % (token.lineno, token.type, token.value))
+        print("(%d, %d): %s(%s)" % (token.lineno, lexer.charno, token.type, token.value))
+        lexer.charno += len(str(token.value))
