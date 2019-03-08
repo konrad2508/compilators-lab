@@ -262,7 +262,8 @@ def t_INT(t):
 
 
 def t_STRING(t):
-    r'\S'
+    r'"(.*)"'
+    t.value = t.value[1:-1]
     return t
 
 

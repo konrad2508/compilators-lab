@@ -5,6 +5,7 @@ D1 = A.+B' ; # add element-wise A with transpose of B
 D2 -= A.-B' ; # substract element-wise A with transpose of B
 D3 *= A.*B' ; # multiply element-wise A with transpose of B
 D4 /= A./B' ; # divide element-wise A with transpose of B
+D5 = A./2ahh
 
 E1 = [ [ 1, 2, 3],
        [ 4, 5, 6],
@@ -14,7 +15,7 @@ res1 = 60.500;
 res2 = 60.;
 res3 = .500;
 res4 = 60.52E2;
-str = "Hello world";
+str = "if";
 
 if (m==n) {
     if (m >= n)
