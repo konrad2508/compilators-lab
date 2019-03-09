@@ -22,7 +22,6 @@ tokens = (
          ) + tuple(reserved.values())
 
 literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', "'", ',']
-operators = ['.+', '.-', '.*', './', '+=', '-=', '*=', '/=', '<=', '>=', '!=', '==']
 t_ignore = '\t'
 
 
@@ -205,12 +204,16 @@ def t_SEMICOLON(t):
 
 
 def t_ID(t):
+    # capture strings starting with letter or underscore
     r'[a-zA-Z_]\w*'
+
+    # check if a reserved keyword was not caught instead
     t.type = reserved.get(t.value, 'ID')
     return t
 
 
 def t_FLOAT(t):
+    # capture floats from python, i.e. numbers in format 6.1, 6., .6 or 60.52E2
     r'(\d*\.\d+E\d+|\d*\.\d+|\d+\.\d*)'
     t.value = float(t.value)
     return t
@@ -223,7 +226,11 @@ def t_INT(t):
 
 
 def t_STRING(t):
-    r'"(.*)"'
+    # strings must be enclosed within quotation marks
+    # correct regex to catch other quotation marks should be (["'`])(.*?)\1, but for some reason re throws error
+    r'"(.*?)"'
+
+    # strip quotation marks
     t.value = t.value[1:-1]
     return t
 
