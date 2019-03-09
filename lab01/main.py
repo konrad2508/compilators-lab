@@ -1,13 +1,28 @@
 import sys
 import ply.lex as lex
 
-tokens = (
-    'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN',
-    'LTE', 'GTE', 'NEQ', 'EQ', 'IF', 'ELSE', 'FOR', 'WHILE', 'BREAK', 'CONTINUE', 'RETURN', 'EYE', 'ZEROS', 'ONES',
-    'PRINT', 'ID', 'FLOAT', 'INT', 'STRING'
-)
+reserved = {
+    'if': 'IF',
+    'else': 'ELSE',
+    'for': 'FOR',
+    'while': 'WHILE',
+    'break': 'BREAK',
+    'continue': 'CONTINUE',
+    'return': 'RETURN',
+    'eye': 'EYE',
+    'zeros': 'ZEROS',
+    'ones': 'ONES',
+    'print': 'PRINT'
+}
 
-literals = "+-*/=<>()[]{}:',;"
+tokens = (
+             'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN',
+             'DIVASSIGN',
+             'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING'
+         ) + tuple(reserved.values())
+
+literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', "'", ',']
+operators = ['.+', '.-', '.*', './', '+=', '-=', '*=', '/=', '<=', '>=', '!=', '==']
 t_ignore = '\t'
 
 
@@ -84,61 +99,6 @@ def t_NEQ(t):
 
 def t_EQ(t):
     r'=='
-    return t
-
-
-def t_IF(t):
-    r'if'
-    return t
-
-
-def t_ELSE(t):
-    r'else'
-    return t
-
-
-def t_FOR(t):
-    r'for'
-    return t
-
-
-def t_WHILE(t):
-    r'while'
-    return t
-
-
-def t_BREAK(t):
-    r'break'
-    return t
-
-
-def t_CONTINUE(t):
-    r'continue'
-    return t
-
-
-def t_RETURN(t):
-    r'return'
-    return t
-
-
-def t_EYE(t):
-    r'eye'
-    return t
-
-
-def t_ZEROS(t):
-    r'zeros'
-    return t
-
-
-def t_ONES(t):
-    r'ones'
-    return t
-
-
-def t_PRINT(t):
-    r'print'
     return t
 
 
@@ -246,6 +206,7 @@ def t_SEMICOLON(t):
 
 def t_ID(t):
     r'[a-zA-Z_]\w*'
+    t.type = reserved.get(t.value, 'ID')
     return t
 
 
