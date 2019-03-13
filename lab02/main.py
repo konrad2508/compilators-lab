@@ -18,6 +18,16 @@ def p_error(p):
         print("Unexpected end of input")
 
 
+def p_expression_number(p):
+    """EXPRESSION : NUMBER"""
+    p[0] = p[1]
+
+
+def p_expression_var(p):
+    """EXPRESSION : VAR"""
+    p[0] = p[1]
+
+
 def p_expression_binop(p):
     """EXPRESSION   : EXPRESSION '+' EXPRESSION
                     | EXPRESSION '-' EXPRESSION
@@ -33,11 +43,11 @@ def p_expression_binop(p):
         p[0] = p[1] / p[3]
 
 
-def p_expression_rel(p):
-    """EXPRESSION   : EXPRESSION '<' EXPRESSION
-                    | EXPRESSION '>' EXPRESSION
-                    | EXPRESSION '*' EXPRESSION
-                    | EXPRESSION '/' EXPRESSION"""
+# def p_expression_rel(p):
+#     """EXPRESSION   : EXPRESSION '<' EXPRESSION
+#                     | EXPRESSION '>' EXPRESSION
+#                     | EXPRESSION '*' EXPRESSION
+#                     | EXPRESSION '/' EXPRESSION"""
 
 
 def p_unary_negation(p):
