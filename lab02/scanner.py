@@ -240,5 +240,9 @@ def t_error(t):
     t.lexer.skip(1)
 
 
+def find_tok_column(t):
+    return lexer.charno
+
+
 lexer = lex.lex()
 lexer.charno = 1

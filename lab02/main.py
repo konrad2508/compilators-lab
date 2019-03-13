@@ -5,9 +5,8 @@ import scanner
 tokens = scanner.tokens
 
 precedence = (
-    # to fill ...
     ("left", '+', '-'),
-    # to fill ...
+    ("left", '*', '/'),
 )
 
 
@@ -19,31 +18,71 @@ def p_error(p):
         print("Unexpected end of input")
 
 
-def p_program(p):
-    """program : instructions_opt"""
+def p_expression_binop(p):
+    """EXPRESSION   : EXPRESSION '+' EXPRESSION
+                    | EXPRESSION '-' EXPRESSION
+                    | EXPRESSION '*' EXPRESSION
+                    | EXPRESSION '/' EXPRESSION"""
+    if p[2] == '+':
+        p[0] = p[1] + p[3]
+    elif p[2] == '-':
+        p[0] = p[1] - p[3]
+    elif p[2] == '*':
+        p[0] = p[1] * p[3]
+    elif p[2] == '/':
+        p[0] = p[1] / p[3]
 
 
-def p_instructions_opt_1(p):
-    """instructions_opt : instructions """
+def p_expression_rel(p):
+    """EXPRESSION   : EXPRESSION '<' EXPRESSION
+                    | EXPRESSION '>' EXPRESSION
+                    | EXPRESSION '*' EXPRESSION
+                    | EXPRESSION '/' EXPRESSION"""
 
 
-def p_instructions_opt_2(p):
-    """instructions_opt : """
+def p_unary_negation(p):
+    """"""
 
 
-def p_instructions_1(p):
-    """instructions : instructions instruction """
+def p_matrix_transposition(p):
+    """"""
 
 
-def p_instructions_2(p):
-    """instructions : instruction """
+def p_matrix_init(p):
+    """"""
 
 
-# to finish the grammar
-# ....
+def p_matrix_fun(p):
+    """"""
 
 
-parser = yacc.yacc()
+def p_assign(p):
+    """"""
+
+
+def p_conditional(p):
+    """"""
+
+
+def p_loop(p):
+    """"""
+
+
+def p_flow_control(p):
+    """"""
+
+
+def p_print(p):
+    """"""
+
+
+def p_complex_expression(p):
+    """"""
+
+
+def p_array(p):
+    """"""
+
 
 if __name__ == '__main__':
     filename = "example1.m"
@@ -56,4 +95,4 @@ if __name__ == '__main__':
 
     parser = yacc.yacc()
     text = file.read()
-    parser.parse(text, lexer=lexer)
+    parser.parse(text, lexer=scanner.lexer)
