@@ -33,14 +33,6 @@ def p_expression_binop(p):
                     | EXPRESSION '-' EXPRESSION
                     | EXPRESSION '*' EXPRESSION
                     | EXPRESSION '/' EXPRESSION"""
-    if p[2] == '+':
-        p[0] = p[1] + p[3]
-    elif p[2] == '-':
-        p[0] = p[1] - p[3]
-    elif p[2] == '*':
-        p[0] = p[1] * p[3]
-    elif p[2] == '/':
-        p[0] = p[1] / p[3]
 
 
 # def p_expression_rel(p):

@@ -17,8 +17,7 @@ reserved = {
 
 tokens = (
              'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN',
-             'DIVASSIGN',
-             'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING'
+             'DIVASSIGN', 'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING'
          ) + tuple(reserved.values())
 
 literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', "'", ',']
@@ -41,166 +40,18 @@ def t_COMMENT(t):
     # do nothing
 
 
-def t_DOTADD(t):
-    r'\.\+'
-    return t
-
-
-def t_DOTSUB(t):
-    r'\.-'
-    return t
-
-
-def t_DOTMUL(t):
-    r'\.\*'
-    return t
-
-
-def t_DOTDIV(t):
-    r'\./'
-    return t
-
-
-def t_ADDASSIGN(t):
-    r'\+='
-    return t
-
-
-def t_SUBASSIGN(t):
-    r'-='
-    return t
-
-
-def t_MULASSIGN(t):
-    r'\*='
-    return t
-
-
-def t_DIVASSIGN(t):
-    r'/='
-    return t
-
-
-def t_LTE(t):
-    r'<='
-    return t
-
-
-def t_GTE(t):
-    r'>='
-    return t
-
-
-def t_NEQ(t):
-    r'!='
-    return t
-
-
-def t_EQ(t):
-    r'=='
-    return t
-
-
-def t_PLUS(t):
-    r'\+'
-    t.type = '+'
-    return t
-
-
-def t_MINUS(t):
-    r'-'
-    t.type = '-'
-    return t
-
-
-def t_MUL(t):
-    r'\*'
-    t.type = '*'
-    return t
-
-
-def t_DIV(t):
-    r'/'
-    t.type = '/'
-    return t
-
-
-def t_EQUAL(t):
-    r'='
-    t.type = '='
-    return t
-
-
-def t_LESS(t):
-    r'<'
-    t.type = '<'
-    return t
-
-
-def t_GREATER(t):
-    r'>'
-    t.type = '>'
-    return t
-
-
-def t_LPAREN(t):
-    r'\('
-    t.type = '('
-    return t
-
-
-def t_RPAREN(t):
-    r'\)'
-    t.type = ')'
-    return t
-
-
-def t_LSQPAREN(t):
-    r'\['
-    t.type = '['
-    return t
-
-
-def t_RSQPAREN(t):
-    r'\]'
-    t.type = ']'
-    return t
-
-
-def t_LCPAREN(t):
-    r'\{'
-    t.type = '{'
-    return t
-
-
-def t_RCPAREN(t):
-    r'\}'
-    t.type = '}'
-    return t
-
-
-def t_RANGE(t):
-    r':'
-    t.type = ':'
-    return t
-
-
-def t_TRANSPOS(t):
-    r"'"
-    t.type = "'"
-    return t
-
-
-def t_COMMA(t):
-    r'\,'
-    t.type = ','
-    return t
-
-
-def t_SEMICOLON(t):
-    r';'
-    t.type = ';'
-    return t
+t_DOTADD = r'\.\+'
+t_DOTSUB = r'\.-'
+t_DOTMUL = r'\.\*'
+t_DOTDIV = r'\./'
+t_ADDASSIGN = r'\+='
+t_SUBASSIGN = r'-='
+t_MULASSIGN = r'\*='
+t_DIVASSIGN = r'/='
+t_LTE = r'<='
+t_GTE = r'>='
+t_NEQ = r'!='
+t_EQ = r'=='
 
 
 def t_ID(t):
@@ -214,7 +65,7 @@ def t_ID(t):
 
 def t_FLOAT(t):
     # capture floats from python, i.e. numbers in format 6.1, 6., .6 or 60.52E2
-    r'(\d*\.\d+E\d+|\d*\.\d+|\d+\.\d*)'
+    r'\d+\.\d*([eE]\d+)?|\d*\.\d+([eE]\d+)?'
     t.value = float(t.value)
     return t
 
@@ -238,6 +89,10 @@ def t_STRING(t):
 def t_error(t):
     print("Error starting at character '" + str(t.value[0]) + "' at line: " + str(t.lexer.lineno))
     t.lexer.skip(1)
+
+
+def find_tok_column(t):
+    return lexer.charno
 
 
 if __name__ == '__main__':
