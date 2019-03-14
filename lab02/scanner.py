@@ -16,10 +16,10 @@ reserved = {
 
 tokens = (
              'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN',
-             'DIVASSIGN', 'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING'
+             'DIVASSIGN', 'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING', 'TRANSPOSE'
          ) + tuple(reserved.values())
 
-literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', "'", ',']
+literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', ',']
 t_ignore = '\t'
 
 
@@ -51,6 +51,7 @@ t_LTE = r'<='
 t_GTE = r'>='
 t_NEQ = r'!='
 t_EQ = r'=='
+t_TRANSPOSE = r"'"
 
 
 def t_ID(t):

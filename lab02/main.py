@@ -18,32 +18,50 @@ def p_error(p):
         print("Unexpected end of input")
 
 
+def p_start(p):
+    """start    : EXPRESSION"""
+
+
+def p_number(p):
+    """EXPRESSION   : INT
+                    | FLOAT"""
+
+
 def p_expression_binop(p):
-    """EXPRESSION   : EXPRESSION '+' EXPRESSION
-                    | EXPRESSION '-' EXPRESSION
-                    | EXPRESSION '*' EXPRESSION
-                    | EXPRESSION '/' EXPRESSION
-                    | EXPRESSION DOTADD EXPRESSION
-                    | EXPRESSION DOTSUB EXPRESSION
-                    | EXPRESSION DOTMUL EXPRESSION
-                    | EXPRESSION DOTDIV EXPRESSION"""
+    """EXPRESSION   : EXPRESSION '+' EXPRESSION ';'
+                    | EXPRESSION '-' EXPRESSION ';'
+                    | EXPRESSION '*' EXPRESSION ';'
+                    | EXPRESSION '/' EXPRESSION ';'
+                    | ID '+' EXPRESSION ';'
+                    | ID '-' EXPRESSION ';'
+                    | ID '*' EXPRESSION ';'
+                    | ID '/' EXPRESSION ';'
+                    | ID '+' ID ';'
+                    | ID '-' ID ';'
+                    | ID '*' ID ';'
+                    | ID '/' ID ';'
+                    | ID DOTADD ID ';'
+                    | ID DOTSUB ID ';'
+                    | ID DOTMUL ID ';'
+                    | ID DOTDIV ID ';'"""
 
 
 def p_expression_rel(p):
-    """EXPRESSION   : EXPRESSION '<' EXPRESSION
-                    | EXPRESSION '>' EXPRESSION
-                    | EXPRESSION GTE EXPRESSION
-                    | EXPRESSION LTE EXPRESSION
-                    | EXPRESSION NEQ EXPRESSION
-                    | EXPRESSION EQ EXPRESSION"""
+    """EXPRESSION   : ID '<' EXPRESSION
+                    | ID '>' EXPRESSION
+                    | ID GTE EXPRESSION
+                    | ID LTE EXPRESSION
+                    | ID NEQ EXPRESSION
+                    | ID EQ EXPRESSION"""
 
 
 def p_unary_negation(p):
-    """EXPRESSION   : '-' EXPRESSION"""
+    """EXPRESSION   : '-' ID"""
 
 
+# how to quote the apostrophe
 def p_matrix_transposition(p):
-    """"""
+    """EXPRESSION   : ID TRANSPOSE"""
 
 
 # damn I dunno man
@@ -58,23 +76,31 @@ def p_matrix_fun(p):
 
 
 def p_assign(p):
-    """EXPRESSION   : EXPRESSION '=' EXPRESSION
-                    | EXPRESSION ADDASSIGN EXPRESSION
-                    | EXPRESSION SUBASSIGN EXPRESSION
-                    | EXPRESSION MULASSIGN EXPRESSION
-                    | EXPRESSION DIVASSIGN EXPRESSION"""
+    """EXPRESSION   : ID '=' EXPRESSION ';'
+                    | ID ADDASSIGN EXPRESSION ';'
+                    | ID SUBASSIGN EXPRESSION ';'
+                    | ID MULASSIGN EXPRESSION ';'
+                    | ID DIVASSIGN EXPRESSION ';'
+                    | ID '=' ID ';'
+                    | ID ADDASSIGN ID ';'
+                    | ID SUBASSIGN ID ';'
+                    | ID MULASSIGN ID ';'
+                    | ID DIVASSIGN ID ';'
+                    | EXPRESSION '=' EXPRESSION ';'
+                    | EXPRESSION ADDASSIGN EXPRESSION ';'
+                    | EXPRESSION SUBASSIGN EXPRESSION ';'
+                    | EXPRESSION MULASSIGN EXPRESSION ';'
+                    | EXPRESSION DIVASSIGN EXPRESSION ';'"""
 
 
 def p_conditional(p):
-    """EXPRESSION   : IF '(' ID EXPRESSION INT ')' EXPRESSION
-                    | IF '(' ID EXPRESSION INT ')' '{' EXPRESSION '}'"""
+    """EXPRESSION   : IF '(' EXPRESSION ')' EXPRESSION
+                    | ELSE EXPRESSION"""
 
 
 def p_loop(p):
     """EXPRESSION   : FOR ID '=' INT ':' ID EXPRESSION
-                    | FOR ID '=' INT ':' ID '{' EXPRESSION '}'
-                    | WHILE '(' ID EXPRESSION INT ')' EXPRESSION
-                    | WHILE '(' ID EXPRESSION INT ')' '{' EXPRESSION '}'"""
+                    | WHILE '(' EXPRESSION ')' EXPRESSION"""
 
 
 def p_flow_control(p):
@@ -84,11 +110,13 @@ def p_flow_control(p):
 
 
 def p_print(p):
-    """EXPRESSION   : PRINT STRING"""
+    """EXPRESSION   : PRINT STRING ';'"""
 
 
 def p_complex_expression(p):
-    """EXPRESSION   : '{' EXPRESSION '}'"""
+    """EXPRESSION   : EXPRESSION EXPRESSION
+                    | '{' EXPRESSION '}'
+                    | '{' EXPRESSION EXPRESSION '}'"""
 
 
 # I dunno man
@@ -97,7 +125,7 @@ def p_array(p):
 
 
 if __name__ == '__main__':
-    filename = "example1.m"
+    filename = "example3.m"
 
     try:
         file = open(filename, "r")
