@@ -18,72 +18,82 @@ def p_error(p):
         print("Unexpected end of input")
 
 
-def p_expression_number(p):
-    """EXPRESSION : NUMBER"""
-    p[0] = p[1]
-
-
-def p_expression_var(p):
-    """EXPRESSION : VAR"""
-    p[0] = p[1]
-
-
 def p_expression_binop(p):
     """EXPRESSION   : EXPRESSION '+' EXPRESSION
                     | EXPRESSION '-' EXPRESSION
                     | EXPRESSION '*' EXPRESSION
-                    | EXPRESSION '/' EXPRESSION"""
+                    | EXPRESSION '/' EXPRESSION
+                    | EXPRESSION DOTADD EXPRESSION
+                    | EXPRESSION DOTSUB EXPRESSION
+                    | EXPRESSION DOTMUL EXPRESSION
+                    | EXPRESSION DOTDIV EXPRESSION"""
 
 
-# def p_expression_rel(p):
-#     """EXPRESSION   : EXPRESSION '<' EXPRESSION
-#                     | EXPRESSION '>' EXPRESSION
-#                     | EXPRESSION '*' EXPRESSION
-#                     | EXPRESSION '/' EXPRESSION"""
+def p_expression_rel(p):
+    """EXPRESSION   : EXPRESSION '<' EXPRESSION
+                    | EXPRESSION '>' EXPRESSION
+                    | EXPRESSION GTE EXPRESSION
+                    | EXPRESSION LTE EXPRESSION
+                    | EXPRESSION NEQ EXPRESSION
+                    | EXPRESSION EQ EXPRESSION"""
 
 
 def p_unary_negation(p):
-    """"""
+    """EXPRESSION   : '-' EXPRESSION"""
 
 
 def p_matrix_transposition(p):
     """"""
 
 
+# damn I dunno man
 def p_matrix_init(p):
-    """"""
+    """EXPRESSION   : '[' EXPRESSION ']'"""
 
 
 def p_matrix_fun(p):
-    """"""
+    """EXPRESSION   : EYE '(' EXPRESSION ')'
+                    | ZEROS '(' EXPRESSION ')'
+                    | ONES '(' EXPRESSION ')'"""
 
 
 def p_assign(p):
-    """"""
+    """EXPRESSION   : EXPRESSION '=' EXPRESSION
+                    | EXPRESSION ADDASSIGN EXPRESSION
+                    | EXPRESSION SUBASSIGN EXPRESSION
+                    | EXPRESSION MULASSIGN EXPRESSION
+                    | EXPRESSION DIVASSIGN EXPRESSION"""
 
 
 def p_conditional(p):
-    """"""
+    """EXPRESSION   : IF '(' ID EXPRESSION INT ')' EXPRESSION
+                    | IF '(' ID EXPRESSION INT ')' '{' EXPRESSION '}'"""
 
 
 def p_loop(p):
-    """"""
+    """EXPRESSION   : FOR ID '=' INT ':' ID EXPRESSION
+                    | FOR ID '=' INT ':' ID '{' EXPRESSION '}'
+                    | WHILE '(' ID EXPRESSION INT ')' EXPRESSION
+                    | WHILE '(' ID EXPRESSION INT ')' '{' EXPRESSION '}'"""
 
 
 def p_flow_control(p):
-    """"""
+    """EXPRESSION   : BREAK
+                    | CONTINUE
+                    | RETURN EXPRESSION"""
 
 
 def p_print(p):
-    """"""
+    """EXPRESSION   : PRINT STRING"""
 
 
 def p_complex_expression(p):
-    """"""
+    """EXPRESSION   : '{' EXPRESSION '}'"""
 
 
+# I dunno man
 def p_array(p):
-    """"""
+    """EXPRESSION   : '[' INT ',' INT ']'"""
 
 
 if __name__ == '__main__':
