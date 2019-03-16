@@ -28,22 +28,22 @@ def p_number(p):
 
 
 def p_expression_binop(p):
-    """EXPRESSION   : EXPRESSION '+' EXPRESSION ';'
-                    | EXPRESSION '-' EXPRESSION ';'
-                    | EXPRESSION '*' EXPRESSION ';'
-                    | EXPRESSION '/' EXPRESSION ';'
-                    | ID '+' EXPRESSION ';'
-                    | ID '-' EXPRESSION ';'
-                    | ID '*' EXPRESSION ';'
-                    | ID '/' EXPRESSION ';'
-                    | ID '+' ID ';'
-                    | ID '-' ID ';'
-                    | ID '*' ID ';'
-                    | ID '/' ID ';'
-                    | ID DOTADD ID ';'
-                    | ID DOTSUB ID ';'
-                    | ID DOTMUL ID ';'
-                    | ID DOTDIV ID ';'"""
+    """EXPRESSION   : EXPRESSION '+' EXPRESSION
+                    | EXPRESSION '-' EXPRESSION
+                    | EXPRESSION '*' EXPRESSION
+                    | EXPRESSION '/' EXPRESSION
+                    | ID '+' EXPRESSION
+                    | ID '-' EXPRESSION
+                    | ID '*' EXPRESSION
+                    | ID '/' EXPRESSION
+                    | ID '+' ID
+                    | ID '-' ID
+                    | ID '*' ID
+                    | ID '/' ID
+                    | ID DOTADD ID
+                    | ID DOTSUB ID
+                    | ID DOTMUL ID
+                    | ID DOTDIV ID"""
 
 
 def p_expression_rel(p):
@@ -59,12 +59,10 @@ def p_unary_negation(p):
     """EXPRESSION   : '-' ID"""
 
 
-# how to quote the apostrophe
 def p_matrix_transposition(p):
     """EXPRESSION   : ID TRANSPOSE"""
 
 
-# damn I dunno man
 def p_matrix_init(p):
     """EXPRESSION   : '[' EXPRESSION ']'"""
 
@@ -77,6 +75,9 @@ def p_matrix_fun(p):
 
 def p_assign(p):
     """EXPRESSION   : ID '=' EXPRESSION ';'
+                    | ID '=' EXPRESSION
+                    | ID '=' INT ';'
+                    | EXPRESSION '=' INT ';'
                     | ID ADDASSIGN EXPRESSION ';'
                     | ID SUBASSIGN EXPRESSION ';'
                     | ID MULASSIGN EXPRESSION ';'
@@ -98,19 +99,27 @@ def p_conditional(p):
                     | ELSE EXPRESSION"""
 
 
+def p_loop_bound(p):
+    """EXPRESSION   : INT ':' ID
+                    | ID ':' ID"""
+
+
 def p_loop(p):
-    """EXPRESSION   : FOR ID '=' INT ':' ID EXPRESSION
+    """EXPRESSION   : FOR EXPRESSION
                     | WHILE '(' EXPRESSION ')' EXPRESSION"""
 
 
 def p_flow_control(p):
-    """EXPRESSION   : BREAK
-                    | CONTINUE
-                    | RETURN EXPRESSION"""
+    """EXPRESSION   : BREAK ';'
+                    | CONTINUE ';'
+                    | RETURN INT ';'
+                    | RETURN EXPRESSION ';'"""
 
 
 def p_print(p):
-    """EXPRESSION   : PRINT STRING ';'"""
+    """EXPRESSION   : PRINT STRING ';'
+                    | PRINT ID ';'
+                    | PRINT ID EXPRESSION ';'"""
 
 
 def p_complex_expression(p):
@@ -119,9 +128,18 @@ def p_complex_expression(p):
                     | '{' EXPRESSION EXPRESSION '}'"""
 
 
-# I dunno man
+def p_id_list(p):
+    """EXPRESSION   : ',' ID
+                    | ',' ID EXPRESSION"""
+
+
+def p_number_list(p):
+    """EXPRESSION   : INT ',' EXPRESSION
+                    | INT ';'"""
+
+
 def p_array(p):
-    """EXPRESSION   : '[' INT ',' INT ']'"""
+    """EXPRESSION   : ID '[' EXPRESSION ']'"""
 
 
 if __name__ == '__main__':
