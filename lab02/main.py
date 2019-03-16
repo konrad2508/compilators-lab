@@ -171,7 +171,7 @@ def p_array(p):
 
 
 if __name__ == '__main__':
-    filename = "example3.m"
+    filename = "example1.m"
 
     try:
         file = open(filename, "r")
