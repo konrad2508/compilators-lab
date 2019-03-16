@@ -44,9 +44,31 @@ def p_expression_binop(p):
                     | ID DOTSUB ID
                     | ID DOTMUL ID
                     | ID DOTDIV ID"""
+    """EXPRESSION   : EXPRESSION '+' EXPRESSION ';'
+                    | EXPRESSION '-' EXPRESSION ';'
+                    | EXPRESSION '*' EXPRESSION ';'
+                    | EXPRESSION '/' EXPRESSION ';'"""
 
 
-def p_expression_rel(p):
+def p_mixed_binop(p):
+    """EXPRESSION   : ID '+' EXPRESSION ';'
+                    | ID '-' EXPRESSION ';'
+                    | ID '*' EXPRESSION ';'
+                    | ID '/' EXPRESSION ';'"""
+
+
+def p_id_binop(p):
+    """EXPRESSION   : ID '+' ID ';'
+                    | ID '-' ID ';'
+                    | ID '*' ID ';'
+                    | ID '/' ID ';'
+                    | ID DOTADD ID ';'
+                    | ID DOTSUB ID ';'
+                    | ID DOTMUL ID ';'
+                    | ID DOTDIV ID ';'"""
+
+
+def p_mixed_rel(p):
     """EXPRESSION   : ID '<' EXPRESSION
                     | ID '>' EXPRESSION
                     | ID GTE EXPRESSION
@@ -73,7 +95,7 @@ def p_matrix_fun(p):
                     | ONES '(' EXPRESSION ')'"""
 
 
-def p_assign(p):
+def p_mixed_assign(p):
     """EXPRESSION   : ID '=' EXPRESSION ';'
                     | ID '=' EXPRESSION
                     | ID '=' INT ';'
@@ -81,17 +103,23 @@ def p_assign(p):
                     | ID ADDASSIGN EXPRESSION ';'
                     | ID SUBASSIGN EXPRESSION ';'
                     | ID MULASSIGN EXPRESSION ';'
-                    | ID DIVASSIGN EXPRESSION ';'
-                    | ID '=' ID ';'
-                    | ID ADDASSIGN ID ';'
-                    | ID SUBASSIGN ID ';'
-                    | ID MULASSIGN ID ';'
-                    | ID DIVASSIGN ID ';'
-                    | EXPRESSION '=' EXPRESSION ';'
+                    | ID DIVASSIGN EXPRESSION ';'"""
+
+
+def p_expression_assign(p):
+    """EXPRESSION   : EXPRESSION '=' EXPRESSION ';'
                     | EXPRESSION ADDASSIGN EXPRESSION ';'
                     | EXPRESSION SUBASSIGN EXPRESSION ';'
                     | EXPRESSION MULASSIGN EXPRESSION ';'
                     | EXPRESSION DIVASSIGN EXPRESSION ';'"""
+
+
+def p_id_assign(p):
+    """EXPRESSION   : ID '=' ID ';'
+                    | ID ADDASSIGN ID ';'
+                    | ID SUBASSIGN ID ';'
+                    | ID MULASSIGN ID ';'
+                    | ID DIVASSIGN ID ';'"""
 
 
 def p_conditional(p):
