@@ -1,6 +1,7 @@
 import sys
 import ply.yacc as yacc
 import scanner
+import os
 
 tokens = scanner.tokens
 
@@ -19,31 +20,116 @@ def p_error(p):
 
 
 def p_start(p):
-    """start    : EXPRESSION"""
+    """start    : operation"""
 
 
-def p_number(p):
-    """EXPRESSION   : INT
-                    | FLOAT"""
+def p_dupcio(p):
+    """operation : operation operation
+                | simple_operation
+                | if_flow
+                | for_flow
+                | while_flow"""
 
+def p_simple_operation(p):
+    """simple_operation : assignment
+                        | matrix_assignment
+                        | spec_function"""
 
+def p_assignment(p):
+    """assignment   : ID '=' assignment_expression ';'
+                    | ID element '=' expression ';'"""
+
+def p_element(p):
+    """element  : '[' index ']"""
+
+def p_index(p):
+    """index    : INT
+                | INT ',' index"""
+
+def p_assignment_expression(p):
+    """assignment_expression    : matrix_func '(' INT ')'
+                                | expression"""
+
+def p_val(p):
+    """val  : INT
+            | FLOAT"""
+
+def p_matrix_assignment(p):
+    """matrix_assignment    : ID '=' '[' matrix_row ']' ';'"""
+
+def p_matrix_row(p):
+    """matrix_row   : matrix_row ';' matrix_row
+                    | matrix_el"""
+
+def p_matrix_el(p):
+    """matrix_el    : val ',' val
+                    | val"""
+
+def p_spec_function(p):
+    """spec_function    : BREAK ';'
+                        | CONTINUE ';'
+                        | RETURN simple_val ';'
+                        | PRINT '(' simple_val ')' ';'"""
+
+def p_simple_val(p):
+    """simple_val   : ID
+                    | ID element
+                    | val"""
+    # add STRING here?
+
+def p_if_flow(p):
+    """if_flow  : IF '(' condition ')' next_op"""
+
+def p_condition_val(p):
+    """condition    : val '>' val
+                    | val '<' val
+                    | val GTE val
+                    | val LTE val
+                    | val NEQ val
+                    | val EQ val"""
+
+def p_condition_id(p):
+    """condition    : ID '>' val
+                    | ID '<' val
+                    | ID GTE val
+                    | ID LTE val
+                    | ID NEQ val
+                    | ID EQ val"""
+
+def p_next_op(p):
+    """next_op  : simple_operation
+                | '{' operation '}'"""
+
+def p_while_flow(p):
+    """while_flow   : WHILE '(' condition ')' next_op"""
+
+def p_for_flow(p):
+    """for_flow : FOR ID '=' range next_op"""
+
+def p_range(p):
+    """range    : INT ':' INT
+                | INT ':' ID"""
+
+def p_bin_op(p):
+    """bin_op   : '+'
+                | '-'
+                | '*'
+                | '/'
+                | DOTADD
+                | DOTSUB
+                | DOTMUL
+                | DOTDIV"""
+
+# WIP
+def p_expression(p):
+    """expression   : """
+
+def p_simple_expression(p):
+    """simple_expression    : """
+# WIP ENDS
+
+# UNCHARTED TERRITORIES BORDER
 def p_expression_binop(p):
-    """EXPRESSION   : EXPRESSION '+' EXPRESSION
-                    | EXPRESSION '-' EXPRESSION
-                    | EXPRESSION '*' EXPRESSION
-                    | EXPRESSION '/' EXPRESSION
-                    | ID '+' EXPRESSION
-                    | ID '-' EXPRESSION
-                    | ID '*' EXPRESSION
-                    | ID '/' EXPRESSION
-                    | ID '+' ID
-                    | ID '-' ID
-                    | ID '*' ID
-                    | ID '/' ID
-                    | ID DOTADD ID
-                    | ID DOTSUB ID
-                    | ID DOTMUL ID
-                    | ID DOTDIV ID"""
     """EXPRESSION   : EXPRESSION '+' EXPRESSION ';'
                     | EXPRESSION '-' EXPRESSION ';'
                     | EXPRESSION '*' EXPRESSION ';'
@@ -168,7 +254,7 @@ def p_number_list(p):
 
 def p_array(p):
     """EXPRESSION   : ID '[' EXPRESSION ']'"""
-
+# UNCHARTED TERRITORIES BORDER
 
 if __name__ == '__main__':
     filename = "example1.m"
@@ -178,6 +264,12 @@ if __name__ == '__main__':
     except IOError:
         print("Cannot open {0} file".format(filename))
         sys.exit(0)
+
+    if os.path.exists('parser.out'):
+        os.remove('parser.out')
+
+    if os.path.exists('parsetab.py'):
+        os.remove('parsetab.py')
 
     parser = yacc.yacc()
     text = file.read()
