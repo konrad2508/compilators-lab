@@ -35,9 +35,16 @@ def p_simple_operation(p):
                         | matrix_assignment
                         | spec_function"""
 
+def p_assignment_op(p):
+    """assignment_op    : '='
+                        | ADDASSIGN
+                        | SUBASSIGN
+                        | MULASSIGN
+                        | DIVASSIGN"""
+
 def p_assignment(p):
-    """assignment   : ID '=' assignment_expression ';'
-                    | ID element '=' expression ';'"""
+    """assignment   : ID assignment_op assignment_expression ';'
+                    | ID element assignment_op expression ';'"""
 
 def p_element(p):
     """element  : '[' index ']"""
@@ -51,8 +58,8 @@ def p_assignment_expression(p):
                                 | expression"""
 
 def p_val(p):
-    """val  : INT
-            | FLOAT"""
+    """simple_val   : INT
+                    | FLOAT"""
 
 def p_matrix_assignment(p):
     """matrix_assignment    : ID '=' '[' matrix_row ']' ';'"""
@@ -62,39 +69,39 @@ def p_matrix_row(p):
                     | matrix_el"""
 
 def p_matrix_el(p):
-    """matrix_el    : val ',' val
-                    | val"""
+    """matrix_el    : simple_val ',' simple_val
+                    | simple_val"""
 
 def p_spec_function(p):
     """spec_function    : BREAK ';'
                         | CONTINUE ';'
-                        | RETURN simple_val ';'
-                        | PRINT '(' simple_val ')' ';'"""
+                        | RETURN val ';'
+                        | PRINT val ';'"""
 
 def p_simple_val(p):
-    """simple_val   : ID
-                    | ID element
-                    | val"""
+    """val  : ID
+            | ID element
+            | simple_val"""
     # add STRING here?
 
 def p_if_flow(p):
     """if_flow  : IF '(' condition ')' next_op"""
 
 def p_condition_val(p):
-    """condition    : val '>' val
-                    | val '<' val
-                    | val GTE val
-                    | val LTE val
-                    | val NEQ val
-                    | val EQ val"""
+    """condition    : simple_val '>' simple_val
+                    | simple_val '<' simple_val
+                    | simple_val GTE simple_val
+                    | simple_val LTE simple_val
+                    | simple_val NEQ simple_val
+                    | simple_val EQ simple_val"""
 
 def p_condition_id(p):
-    """condition    : ID '>' val
-                    | ID '<' val
-                    | ID GTE val
-                    | ID LTE val
-                    | ID NEQ val
-                    | ID EQ val"""
+    """condition    : ID '>' simple_val
+                    | ID '<' simple_val
+                    | ID GTE simple_val
+                    | ID LTE simple_val
+                    | ID NEQ simple_val
+                    | ID EQ simple_val"""
 
 def p_next_op(p):
     """next_op  : simple_operation
