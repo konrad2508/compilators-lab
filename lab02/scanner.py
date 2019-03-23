@@ -36,7 +36,7 @@ def t_WHITESPACE(t):
 
 def t_COMMENT(t):
     r'\#.*'
-    # do nothing
+    pass
 
 
 t_DOTADD = r'\.\+'
