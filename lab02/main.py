@@ -24,16 +24,18 @@ def p_start(p):
 
 
 def p_dupcio(p):
-    """operation : operation operation
-                | simple_operation
-                | if_flow
-                | for_flow
-                | while_flow"""
+    """operation    : operation operation
+                    | simple_operation"""
+
 
 def p_simple_operation(p):
     """simple_operation : assignment
                         | matrix_assignment
-                        | spec_function"""
+                        | spec_function
+                        | if_flow
+                        | for_flow
+                        | while_flow"""
+
 
 def p_assignment_op(p):
     """assignment_op    : '='
@@ -42,40 +44,60 @@ def p_assignment_op(p):
                         | MULASSIGN
                         | DIVASSIGN"""
 
+
 def p_assignment(p):
-    """assignment   : ID assignment_op assignment_expression ';'
-                    | ID element assignment_op expression ';'"""
+    """assignment   : ID assignment_op assignment_expression
+                    | ID element assignment_op expression"""
+
 
 def p_element(p):
     """element  : '[' index ']'"""
+
 
 def p_index(p):
     """index    : INT
                 | INT ',' index"""
 
+
 def p_assignment_expression(p):
-    """assignment_expression    : matrix_func '(' INT ')'
+    """assignment_expression    : matrix_func '(' INT ')' ';'
                                 | expression"""
+
 
 def p_matrix_func(p):
     """matrix_func  : ZEROS
                     | EYE
                     | ONES"""
 
+
 def p_simple_val(p):
     """simple_val   : INT
                     | FLOAT"""
 
+
 def p_matrix_assignment(p):
-    """matrix_assignment    : ID '=' '[' matrix_row ']' ';'"""
+    """matrix_assignment    : ID '=' '[' custom_matrix ']' ';'"""
+
+
+def p_custom_matrix(p):
+    """custom_matrix    : matrix_row
+                        | matrix_row additional_matrix_row"""
+
+
+def p_additional_matrix_row(p):
+    """additional_matrix_row    : additional_matrix_row additional_matrix_row
+                                | ';' matrix_row"""
+
 
 def p_matrix_row(p):
-    """matrix_row   : matrix_row ';' matrix_row
-                    | matrix_el"""
+    """matrix_row   : simple_val
+                    | simple_val additional_simple_val"""
 
-def p_matrix_el(p):
-    """matrix_el    : simple_val ',' simple_val
-                    | simple_val"""
+
+def p_additional_simple_val(p):
+    """additional_simple_val    : additional_simple_val additional_simple_val
+                                | ',' simple_val"""
+
 
 def p_spec_function(p):
     """spec_function    : BREAK ';'
@@ -83,17 +105,28 @@ def p_spec_function(p):
                         | RETURN extended_val ';'
                         | PRINT extended_val ';'"""
 
+
 def p_extended_val(p):
     """extended_val : STRING
                     | val"""
+
 
 def p_val(p):
     """val  : ID
             | ID element
             | simple_val"""
 
+
 def p_if_flow(p):
-    """if_flow  : IF '(' condition ')' next_op"""
+    """if_flow  : IF '(' condition ')' next_op
+                | IF '(' condition ')' next_op ELSE next_op"""
+                # | IF '(' condition ')' next_op elseif_flow"""
+
+# the fuck is wrong with this nigga
+# def p_elseif_flow(p):
+#     """elseif_flow  : elseif_flow elseif_flow
+#                     | ELSE IF '(' condition ')' next_op"""
+
 
 def p_condition_val(p):
     """condition    : simple_val '>' simple_val
@@ -103,6 +136,7 @@ def p_condition_val(p):
                     | simple_val NEQ simple_val
                     | simple_val EQ simple_val"""
 
+
 def p_condition_id(p):
     """condition    : ID '>' simple_val
                     | ID '<' simple_val
@@ -111,20 +145,26 @@ def p_condition_id(p):
                     | ID NEQ simple_val
                     | ID EQ simple_val"""
 
+
+
 def p_next_op(p):
     """next_op  : simple_operation
                 | '{' operation '}'"""
 
+
 def p_while_flow(p):
     """while_flow   : WHILE '(' condition ')' next_op"""
 
+
 def p_for_flow(p):
     """for_flow : FOR ID '=' range next_op"""
+
 
 def p_range(p):
     """range    : INT ':' INT
                 | INT ':' ID
                 | ID ':' ID"""
+
 
 def p_bin_op(p):
     """bin_op   : '+'
@@ -136,12 +176,14 @@ def p_bin_op(p):
                 | DOTMUL
                 | DOTDIV"""
 
+
 def p_un_op(p):
     """un_op    : '-'"""
 
-# WIP
+
 def p_expression(p):
     """expression   : simple_expression ';'"""
+
 
 def p_simple_expression(p):
     """simple_expression    : simple_expression bin_op simple_expression
@@ -150,7 +192,6 @@ def p_simple_expression(p):
                             | '(' simple_expression ')'
                             | val"""
 
-# WIP ENDS
 
 # UNCHARTED TERRITORIES BORDER
 # def p_expression_binop(p):
@@ -281,7 +322,7 @@ def p_simple_expression(p):
 # UNCHARTED TERRITORIES BORDER
 
 if __name__ == '__main__':
-    filename = "example1.m"
+    filename = "example3.m"
 
     try:
         file = open(filename, "r")
