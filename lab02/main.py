@@ -122,7 +122,7 @@ def p_val(p):
 def p_if_flow(p):
     """if_flow  : IF '(' condition ')' next_op
                 | IF '(' condition ')' next_op ELSE next_op"""
-                # | IF '(' condition ')' next_op elseif_flow"""
+    # | IF '(' condition ')' next_op elseif_flow"""
 
 
 # the cuck is wrong with this TRIHARD
@@ -132,25 +132,21 @@ def p_if_flow(p):
 
 
 def p_condition_val(p):
-    """condition    : simple_val '>' simple_val
-                    | simple_val '<' simple_val
-                    | simple_val GTE simple_val
-                    | simple_val LTE simple_val
-                    | simple_val NEQ simple_val
-                    | simple_val EQ simple_val"""
+    """condition    : simple_val '>' simple_expression
+                    | simple_val '<' simple_expression
+                    | simple_val GTE simple_expression
+                    | simple_val LTE simple_expression
+                    | simple_val NEQ simple_expression
+                    | simple_val EQ simple_expression"""
 
 
 def p_condition_id(p):
-    """condition    : ID '>' simple_val
-                    | ID '<' simple_val
-                    | ID GTE simple_val
-                    | ID LTE simple_val
-                    | ID NEQ simple_val
-                    | ID EQ simple_val"""
-
-
-def p_condition_extended(p):
-    """condition    : ID LTE ID '/' simple_val"""
+    """condition    : ID '>' simple_expression
+                    | ID '<' simple_expression
+                    | ID GTE simple_expression
+                    | ID LTE simple_expression
+                    | ID NEQ simple_expression
+                    | ID EQ simple_expression"""
 
 
 def p_next_op(p):
@@ -328,7 +324,7 @@ def p_simple_expression(p):
 # UNCHARTED TERRITORIES BORDER
 
 if __name__ == '__main__':
-    filename = "example.m"
+    filename = "example3.m"
 
     try:
         file = open(filename, "r")
