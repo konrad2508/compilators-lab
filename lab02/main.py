@@ -25,6 +25,7 @@ def p_start(p):
 
 def p_dupcio(p):
     """operation    : operation operation
+                    | '{' operation '}'
                     | simple_operation"""
 
 
@@ -114,7 +115,8 @@ def p_extended_val(p):
 def p_val(p):
     """val  : ID
             | ID element
-            | simple_val"""
+            | simple_val
+            | val ',' ID"""
 
 
 def p_if_flow(p):
@@ -122,7 +124,8 @@ def p_if_flow(p):
                 | IF '(' condition ')' next_op ELSE next_op"""
                 # | IF '(' condition ')' next_op elseif_flow"""
 
-# the fuck is wrong with this nigga
+
+# the cuck is wrong with this TRIHARD
 # def p_elseif_flow(p):
 #     """elseif_flow  : elseif_flow elseif_flow
 #                     | ELSE IF '(' condition ')' next_op"""
@@ -145,6 +148,9 @@ def p_condition_id(p):
                     | ID NEQ simple_val
                     | ID EQ simple_val"""
 
+
+def p_condition_extended(p):
+    """condition    : ID LTE ID '/' simple_val"""
 
 
 def p_next_op(p):
@@ -322,7 +328,7 @@ def p_simple_expression(p):
 # UNCHARTED TERRITORIES BORDER
 
 if __name__ == '__main__':
-    filename = "example3.m"
+    filename = "example.m"
 
     try:
         file = open(filename, "r")
