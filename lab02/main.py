@@ -6,8 +6,18 @@ import os
 tokens = scanner.tokens
 
 precedence = (
+    ("nonassoc", "IF"),
+    ("nonassoc", "ELSE"),
+    ("nonassoc", "FOR", "WHILE"),
+    ("nonassoc", "BREAK", "CONTINUE"),
+    ("nonassoc", "EYES", "ZEROS", "ONES", "PRINT", "RETURN"),
     ("left", '+', '-'),
     ("left", '*', '/'),
+    ("left", 'DOTADD', 'DOTSUB'),
+    ("left", 'DOTMUL', 'DOTDIV'),
+    ('nonassoc', 'TRANSPOSE'),
+    ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
+    ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN')
 )
 
 
@@ -122,13 +132,6 @@ def p_val(p):
 def p_if_flow(p):
     """if_flow  : IF '(' condition ')' next_op
                 | IF '(' condition ')' next_op ELSE next_op"""
-    # | IF '(' condition ')' next_op elseif_flow"""
-
-
-# the cuck is wrong with this TRIHARD
-# def p_elseif_flow(p):
-#     """elseif_flow  : elseif_flow elseif_flow
-#                     | ELSE IF '(' condition ')' next_op"""
 
 
 def p_condition_val(p):
@@ -194,134 +197,6 @@ def p_simple_expression(p):
                             | '(' simple_expression ')'
                             | val"""
 
-
-# UNCHARTED TERRITORIES BORDER
-# def p_expression_binop(p):
-#     """EXPRESSION   : EXPRESSION '+' EXPRESSION ';'
-#                     | EXPRESSION '-' EXPRESSION ';'
-#                     | EXPRESSION '*' EXPRESSION ';'
-#                     | EXPRESSION '/' EXPRESSION ';'"""
-#
-#
-# def p_mixed_binop(p):
-#     """EXPRESSION   : ID '+' EXPRESSION ';'
-#                     | ID '-' EXPRESSION ';'
-#                     | ID '*' EXPRESSION ';'
-#                     | ID '/' EXPRESSION ';'"""
-#
-#
-# def p_id_binop(p):
-#     """EXPRESSION   : ID '+' ID ';'
-#                     | ID '-' ID ';'
-#                     | ID '*' ID ';'
-#                     | ID '/' ID ';'
-#                     | ID DOTADD ID ';'
-#                     | ID DOTSUB ID ';'
-#                     | ID DOTMUL ID ';'
-#                     | ID DOTDIV ID ';'"""
-#
-#
-# def p_mixed_rel(p):
-#     """EXPRESSION   : ID '<' EXPRESSION
-#                     | ID '>' EXPRESSION
-#                     | ID GTE EXPRESSION
-#                     | ID LTE EXPRESSION
-#                     | ID NEQ EXPRESSION
-#                     | ID EQ EXPRESSION"""
-#
-#
-# def p_unary_negation(p):
-#     """EXPRESSION   : '-' ID"""
-#
-#
-# def p_matrix_transposition(p):
-#     """EXPRESSION   : ID TRANSPOSE"""
-#
-#
-# def p_matrix_init(p):
-#     """EXPRESSION   : '[' EXPRESSION ']'"""
-#
-#
-# def p_matrix_fun(p):
-#     """EXPRESSION   : EYE '(' EXPRESSION ')'
-#                     | ZEROS '(' EXPRESSION ')'
-#                     | ONES '(' EXPRESSION ')'"""
-#
-#
-# def p_mixed_assign(p):
-#     """EXPRESSION   : ID '=' EXPRESSION ';'
-#                     | ID '=' EXPRESSION
-#                     | ID '=' INT ';'
-#                     | EXPRESSION '=' INT ';'
-#                     | ID ADDASSIGN EXPRESSION ';'
-#                     | ID SUBASSIGN EXPRESSION ';'
-#                     | ID MULASSIGN EXPRESSION ';'
-#                     | ID DIVASSIGN EXPRESSION ';'"""
-#
-#
-# def p_expression_assign(p):
-#     """EXPRESSION   : EXPRESSION '=' EXPRESSION ';'
-#                     | EXPRESSION ADDASSIGN EXPRESSION ';'
-#                     | EXPRESSION SUBASSIGN EXPRESSION ';'
-#                     | EXPRESSION MULASSIGN EXPRESSION ';'
-#                     | EXPRESSION DIVASSIGN EXPRESSION ';'"""
-#
-#
-# def p_id_assign(p):
-#     """EXPRESSION   : ID '=' ID ';'
-#                     | ID ADDASSIGN ID ';'
-#                     | ID SUBASSIGN ID ';'
-#                     | ID MULASSIGN ID ';'
-#                     | ID DIVASSIGN ID ';'"""
-#
-#
-# def p_conditional(p):
-#     """EXPRESSION   : IF '(' EXPRESSION ')' EXPRESSION
-#                     | ELSE EXPRESSION"""
-#
-#
-# def p_loop_bound(p):
-#     """EXPRESSION   : INT ':' ID
-#                     | ID ':' ID"""
-#
-#
-# def p_loop(p):
-#     """EXPRESSION   : FOR EXPRESSION
-#                     | WHILE '(' EXPRESSION ')' EXPRESSION"""
-#
-#
-# def p_flow_control(p):
-#     """EXPRESSION   : BREAK ';'
-#                     | CONTINUE ';'
-#                     | RETURN INT ';'
-#                     | RETURN EXPRESSION ';'"""
-#
-#
-# def p_print(p):
-#     """EXPRESSION   : PRINT STRING ';'
-#                     | PRINT ID ';'
-#                     | PRINT ID EXPRESSION ';'"""
-#
-#
-# def p_complex_expression(p):
-#     """EXPRESSION   : EXPRESSION EXPRESSION
-#                     | '{' EXPRESSION '}'
-#                     | '{' EXPRESSION EXPRESSION '}'"""
-#
-#
-# def p_id_list(p):
-#     """EXPRESSION   : ',' ID
-#                     | ',' ID EXPRESSION"""
-#
-#
-# def p_number_list(p):
-#     """EXPRESSION   : INT ',' EXPRESSION
-#                     | INT ';'"""
-#
-#
-# def p_array(p):
-#     """EXPRESSION   : ID '[' EXPRESSION ']'"""
-# UNCHARTED TERRITORIES BORDER
 
 if __name__ == '__main__':
     filename = "example3.m"
