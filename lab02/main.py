@@ -10,7 +10,7 @@ precedence = (
     ("nonassoc", "ELSE"),
     ("nonassoc", "FOR", "WHILE"),
     ("nonassoc", "BREAK", "CONTINUE"),
-    ("nonassoc", "EYES", "ZEROS", "ONES", "PRINT", "RETURN"),
+    ("nonassoc", "EYE", "ZEROS", "ONES", "PRINT", "RETURN"),
     ("left", '+', '-'),
     ("left", '*', '/'),
     ("left", 'DOTADD', 'DOTSUB'),
