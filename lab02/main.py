@@ -8,16 +8,13 @@ tokens = scanner.tokens
 precedence = (
     ("nonassoc", "IF"),
     ("nonassoc", "ELSE"),
-    ("nonassoc", "FOR", "WHILE"),
-    ("nonassoc", "BREAK", "CONTINUE"),
-    ("nonassoc", "EYE", "ZEROS", "ONES", "PRINT", "RETURN"),
+    ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),
+    ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
     ("left", '+', '-'),
     ("left", '*', '/'),
     ("left", 'DOTADD', 'DOTSUB'),
     ("left", 'DOTMUL', 'DOTDIV'),
-    ('nonassoc', 'TRANSPOSE'),
-    ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
-    ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN')
+    ('nonassoc', 'TRANSPOSE')
 )
 
 
@@ -33,7 +30,7 @@ def p_start(p):
     """start    : operation"""
 
 
-def p_dupcio(p):
+def p_operation(p):
     """operation    : operation operation
                     | '{' operation '}'
                     | simple_operation"""
@@ -199,7 +196,7 @@ def p_simple_expression(p):
 
 
 if __name__ == '__main__':
-    filename = "example3.m"
+    filename = "example1.m"
 
     try:
         file = open(filename, "r")
