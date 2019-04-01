@@ -1,7 +1,6 @@
 import sys
 import ply.yacc as yacc
 import Mparser
-from TreePrinter import TreePrinter
 
 if __name__ == '__main__':
     filename = ""

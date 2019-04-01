@@ -8,7 +8,7 @@ import scanner
 tokens = scanner.tokens
 
 precedence = (
-    ("nonassoc", "IF"),
+    ("nonassoc", "IFX"),
     ("nonassoc", "ELSE"),
     ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),
     ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
@@ -110,7 +110,7 @@ def p_value(p):
 
 def p_if_else(p):
     """if_else  : IF '(' condition ')' operation ELSE operation
-                | IF '(' condition ')' operation"""
+                | IF '(' condition ')' operation %prec IFX"""
 
 
 def p_condition(p):
