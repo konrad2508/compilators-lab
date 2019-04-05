@@ -21,12 +21,12 @@ class OperationChain(Node):
 
 
 class Operation(Node):
-    def __init__(self):
-        pass
+    def __init__(self, operation):
+        self.operation = operation
 
 class SimpleOp(Node):
-    def __init__(self):
-        pass
+    def __init__(self, operation):
+        self.operation = operation
 
 
 class AssignOp(Node):
@@ -169,9 +169,9 @@ class ParenExpr(Expression):
 
 
 class BinExpr(Expression):
-    def __init__(self, op, left, right):
-        self.op = op
+    def __init__(self, left, op, right):
         self.left = left
+        self.op = op
         self.right = right
 
 
