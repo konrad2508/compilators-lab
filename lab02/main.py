@@ -32,8 +32,8 @@ def p_start(p):
 
 
 def p_operation_chain(p):
-    """operation_chain  : operation
-                        | operation operation_chain"""
+    """operation_chain  : operation operation_chain
+                        | """
 
 
 def p_operation(p):

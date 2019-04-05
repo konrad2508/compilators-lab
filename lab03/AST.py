@@ -1,49 +1,37 @@
 class Node(object):
-    pass
+    def __str__(self):
+        return self.printTree()
 
 
-# values
-class Values(Node):
-    pass
+class Empty(Node):
+    def __init__(self):
+        pass
 
 
-class IntNum(Values):
+class Start(Node):
+    def __init__(self):
+        pass
+
+class OperationChain(Node):
+    def __init__(self):
+        self.operation_list = []
+
+    def append_value(self, op):
+        self.operation_list.append(op)
+
+
+class Operation(Node):
+    def __init__(self):
+        pass
+
+class SimpleOp(Node):
+    def __init__(self):
+        pass
+
+
+class AssignOp(Node):
     def __init__(self, value):
         self.value = value
-
-
-class FloatNum(Values):
-    def __init__(self, value):
-        self.value = value
-
-
-class String(Values):
-    def __init__(self, value):
-        self.value = value
-
-
-class Id(Values):
-    def __init__(self, name):
-        self.name = name
-
-
-# operators
-class Operator(Node):
-    pass
-
-
-class BinOperator(Operator):
-    def __init__(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
-
-
-class RelOperator(Operator):
-    def __init__(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
 
 
 # assignments
@@ -52,6 +40,75 @@ class Assign(Node):
         self.op = op
         self.left = left
         self.right = right
+
+
+class IndexChain(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class Index(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+# print, return and matrix functions
+class Function(Node):
+    pass
+
+
+class MatrixFunction(Function):
+    def __init__(self, instr, arg):
+        self.instr = instr
+        self.arg = arg
+
+
+# class MatrixAssign
+
+class SystemFunction(Function):
+    def __init__(self, instr, arg):
+        self.instr = instr
+        self.arg = arg
+
+
+# break, continue
+class FlowControl(Node):
+    def __init__(self, instr):
+        self.instr = instr
+
+
+class ValueChain(Node):
+    def __init__(self):
+        self.value_list = []
+
+    def append_value(self, value):
+        self.value_list.append(value)
+
+
+# Constants
+class Value(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class Int(Value):
+    def __init__(self, value):
+        self.value = value
+
+
+class Float(Value):
+    def __init__(self, value):
+        self.value = value
+
+
+class String(Value):
+    def __init__(self, value):
+        self.value = value
+
+
+class Id(Value):
+    def __init__(self, name):
+        self.name = name
 
 
 # instructions
@@ -64,52 +121,60 @@ class IfInstruction(Instruction):
         self.cond = cond
         self.instr = instr
 
+
 class ElseInstruction(Instruction):
     def __init__(self, instr):
         self.instr = instr
 
-class ForInstruction(Instruction):
-    def __init__(self, assignment, instr):
-        self.assignment = assignment
+
+class Condition(Instruction):
+    def __init__(self, left, instr, right):
+        self.left = left
         self.instr = instr
+        self.right = right
+
+
+class Relational(Value):
+    def __init__(self, value):
+        self.value = value
+
 
 class WhileInstruction(Instruction):
     def __init__(self, cond, instr):
         self.cond = cond
         self.instr = instr
 
-# break, continue
-class FlowControl(Node):
-    def __init__(self, instr):
+
+class ForInstruction(Instruction):
+    def __init__(self, assignment, instr):
+        self.assignment = assignment
         self.instr = instr
 
 
-# print, return and matrix functions
-class Function(Node):
-    pass
-
-class SystemFunction(Function):
-    def __init__(self, instr, arg):
-        self.instr = instr
-        self.arg = arg
-
-class MatrixFunction(Function):
-    def __init__(self, instr, arg):
-        self.instr = instr
-        self.arg = arg
+class Range(Node):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
 
 
-# compound instructions
-class CompoundInstruction(Node):
-    def __init__(self):
-        raise Exception("Not implemented")
-
-# array stuff
-class ArrayStuff(Node):
-    def __init__(self):
-        raise Exception("Not implemented")
-
-
-class Error(Node):
+# Expressions
+class Expression(Node):
     def __init__(self):
         pass
+
+
+class ParenExpr(Expression):
+    def __init__(self, expr):
+        self.expression = expr
+
+
+class BinExpr(Expression):
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
+
+
+class BinOp(Value):
+    def __init__(self, value):
+        self.value = value

@@ -4,6 +4,7 @@ import sys
 import ply.yacc as yacc
 
 import scanner
+import AST
 
 tokens = scanner.tokens
 
@@ -29,11 +30,17 @@ def p_error(p):
 
 def p_start(p):
     """start    : operation_chain"""
+    p[0] = AST.Start()
 
 
 def p_operation_chain(p):
-    """operation_chain  : operation
-                        | operation operation_chain"""
+    """operation_chain  : operation operation_chain
+                        | """
+    if len(p) == 3:
+        p[1].declarations.append(p[2])
+        p[0] = p[1]
+    else:
+        p[0] = AST.OperationChain()
 
 
 def p_operation(p):
@@ -149,8 +156,7 @@ def p_expression(p):
 
 
 def p_bin_expr(p):
-    """bin_expr     : expression bin_op value
-                    | expression bin_op '(' expression ')'"""
+    """bin_expr     : expression bin_op value"""
 
 
 def p_bin_op(p):
@@ -165,7 +171,7 @@ def p_bin_op(p):
 
 
 if __name__ == '__main__':
-    filename = "example1.m"
+    filename = "example3.m"
 
     try:
         file = open(filename, "r")
