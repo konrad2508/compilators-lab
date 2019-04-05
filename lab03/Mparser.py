@@ -30,26 +30,26 @@ def p_error(p):
 
 def p_start(p):
     """start    : operation_chain"""
-    p[0] = AST.Start()
+    # p[0] = AST.Start()
 
 
 def p_operation_chain(p):
     """operation_chain  : operation operation_chain
                         | """
-    if len(p) == 3:
-        p[1].operation_list.append(p[2])
-        p[0] = p[1]
-    else:
-        p[0] = AST.OperationChain()
+    # if len(p) == 3:
+    #     p[1].operation_list.append(p[2])
+    #     p[0] = p[1]
+    # else:
+    #     p[0] = AST.OperationChain()
 
 
 def p_operation(p):
     """operation    : '{' operation_chain '}'
                     | simple_operation"""
-    if len(p) == 2:
-        p[0] = AST.Operation(p[1])
-    else:
-        p[0] = AST.Operation(p[2])
+    # if len(p) == 2:
+    #     p[0] = AST.Operation(p[1])
+    # else:
+    #     p[0] = AST.Operation(p[2])
 
 
 def p_simple_operation(p):
@@ -59,7 +59,7 @@ def p_simple_operation(p):
                         | if_else
                         | for
                         | while"""
-    p[0] = AST.SimpleOp(p[1])
+    # p[0] = AST.SimpleOp(p[1])
 
 
 def p_assignment_operator(p):
@@ -68,7 +68,7 @@ def p_assignment_operator(p):
                             | SUBASSIGN
                             | MULASSIGN
                             | DIVASSIGN"""
-    p[0] = p[1]
+    # p[0] = p[1]
 
 
 def p_assignment(p):
@@ -105,7 +105,8 @@ def p_basic_function(p):
     """basic_function   : BREAK ';'
                         | CONTINUE ';'
                         | RETURN value ';'
-                        | PRINT value_chain ';'"""
+                        | PRINT value_chain ';'
+                        | PRINT value ';'"""
 
 
 def p_value_chain(p):
@@ -120,18 +121,18 @@ def p_value(p):
                 | FLOAT
                 | ID
                 | ID index_chain"""
-    try:
-        int(p[1])
-        p[0] = AST.Int(p[1])
-    except ValueError:
-        try:
-            float(p[1])
-            p[0] = AST.Float(p[1])
-        except ValueError:
-            if " " in p:
-                p[0] = AST.String(p[1])
-            else:
-                p[0] = AST.Id(p[1])
+    # try:
+    #     int(p[1])
+    #     p[0] = AST.Int(p[1])
+    # except ValueError:
+    #     try:
+    #         float(p[1])
+    #         p[0] = AST.Float(p[1])
+    #     except ValueError:
+    #         if " " in p:
+    #             p[0] = AST.String(p[1])
+    #         else:
+    #             p[0] = AST.Id(p[1])
 
 
 def p_if_else(p):
@@ -141,7 +142,7 @@ def p_if_else(p):
 
 def p_condition(p):
     """condition    : expression relational expression"""
-    p[0] = AST.Condition(p[1], p[2], p[3])
+    # p[0] = AST.Condition(p[1], p[2], p[3])
 
 
 def p_relational(p):
@@ -151,25 +152,26 @@ def p_relational(p):
                     | LTE
                     | NEQ
                     | EQ """
-    p[0] = p[1]
+    # p[0] = p[1]
 
 
 def p_while(p):
     """while    : WHILE '(' condition ')' operation"""
-    p[0] = AST.WhileInstruction(p[3], p[5])
+    # p[0] = AST.WhileInstruction(p[3], p[5])
 
 
 # TODO export ID = range to assignments
 def p_for(p):
     """for  : FOR ID '=' range operation"""
-    p[0] = AST.ForInstruction(p[2], p[3])
+    # p[0] = AST.ForInstruction(p[2], p[3])
 
 
 def p_range(p):
     """range    : ID ':' INT
                 | INT ':' ID
-                | ID ':' ID"""
-    p[0] = AST.Range(p[1], p[3])
+                | ID ':' ID
+                | INT ':' INT"""
+    # p[0] = AST.Range(p[1], p[3])
 
 
 def p_expression(p):
@@ -182,7 +184,7 @@ def p_expression(p):
 
 def p_bin_expr(p):
     """bin_expr : expression bin_op value"""
-    p[0] = AST.BinExpr(p[1], p[2], p[3])
+    # p[0] = AST.BinExpr(p[1], p[2], p[3])
 
 
 def p_bin_op(p):
@@ -194,7 +196,7 @@ def p_bin_op(p):
                 | DOTSUB
                 | DOTMUL
                 | DOTDIV"""
-    p[0] = p[1]
+    # p[0] = p[1]
 
 
 if __name__ == '__main__':
