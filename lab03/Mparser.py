@@ -15,9 +15,9 @@ precedence = (
     ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
     ("left", '+', '-'),
     ("left", '*', '/'),
-    ('nonassoc', 'TRANSPOSE'),
     ("left", 'DOTADD', 'DOTSUB'),
-    ("left", 'DOTMUL', 'DOTDIV')
+    ("left", 'DOTMUL', 'DOTDIV'),
+    # ('nonassoc', 'TRANSPOSE'),
 )
 
 
@@ -114,7 +114,10 @@ def p_basic_function(p):
                         | RETURN value ';'
                         | PRINT value_chain ';'
                         | PRINT value ';'"""
-
+    if p[2] == ';':
+        p[0] = AST.Function(p[1], None)
+    else:
+        p[0] = AST.Function(p[1], p[2])
 
 def p_value_chain(p):
     """value_chain  : value ',' value_chain
@@ -155,10 +158,9 @@ def p_while(p):
     # p[0] = AST.WhileInstruction(p[3], p[5])
 
 
-# TODO export ID = range to assignments
 def p_for(p):
     """for  : FOR ID '=' range operation"""
-    # p[0] = AST.ForInstruction(p[2], p[3])
+    p[0] = AST.For(p[2], p[4], p[5])
 
 
 def p_range(p):
@@ -166,16 +168,26 @@ def p_range(p):
                 | INT ':' ID
                 | ID ':' ID
                 | INT ':' INT"""
-    # p[0] = AST.Range(p[1], p[3])
+    p[0] = AST.Range(p[1], p[3])
 
 
 def p_expression(p):
     """expression   : '(' expression ')'
-                    | '-' expression
-                    | expression TRANSPOSE
                     | bin_expr
+                    | un_expr
                     | value"""
-    p[0] = p[1]
+    if p[1] == '(':
+        p[0] = p[2]
+    else:
+        p[0] = p[1]
+
+def p_un_expr(p):
+    """un_expr  : '-' expression
+                | expression TRANSPOSE"""
+    if p[1] == '-':
+        p[0] = AST.UniExp(p[1], p[2])
+    else:
+        p[0] = AST.UniExp(p[2], p[1])
 
 def p_bin_expr(p):
     """bin_expr : expression bin_op value"""

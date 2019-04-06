@@ -72,6 +72,12 @@ class BinExp(Node):
         self.right = right
 
 
+class UniExp(Node):
+    def __init__(self, op, value):
+        self.op = op
+        self.value = value
+
+
 class Function(Node):
     def __init__(self, fun, args):
         self.fun = fun
@@ -89,8 +95,15 @@ class While(Node):
         self.instruction = instruction
 
 
+class Range(Node):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+
 class For(Node):
-    def __init__(self, range, instruction):
+    def __init__(self, var, range, instruction):
+        self.var = var
         self.range = range
         self.instruction = instruction
 
