@@ -2,6 +2,7 @@ import sys
 import ply.yacc as yacc
 import Mparser
 import os
+from TreePrinter import TreePrinter
 
 if __name__ == '__main__':
     filename = ""
@@ -24,4 +25,4 @@ if __name__ == '__main__':
     parser = yacc.yacc(module=Mparser)
     text = file.read()
     ast = parser.parse(text, lexer=scanner.lexer)
-    # ast.printTree()
+    ast.printTree()

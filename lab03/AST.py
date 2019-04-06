@@ -16,6 +16,20 @@ class Node(object):
 # STRING DONE
 # TRANSPOSE ???
 
+class Start(Node):
+    def __init__(self, rest):
+        self.rest = rest
+
+
+class Operations(Node):
+    def __init__(self, operations):
+        self.operations = operations
+
+    def __add__(self, other):
+        print('add : ' + str(len(self.operations)))
+        self.operations.extend(other.operations)
+        print('after : ' + str(len(self.operations)))
+
 
 class IntNum(Node):
     def __init__(self, value):
