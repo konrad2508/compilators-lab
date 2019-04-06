@@ -45,6 +45,18 @@ class TreePrinter:
         print(indent * sugar + self.fun)
         print((indent + 1) * sugar + str(self.args))
 
+    @addToClass(AST.BinExp)
+    def printTree(self, indent = 0):
+        print(indent * sugar + self.op)
+        try:
+            self.left.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.left))
+        try:
+            self.right.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.right))
+
     @addToClass(AST.IntNum)
     def printTree(self, indent=0):
         print(self.value)

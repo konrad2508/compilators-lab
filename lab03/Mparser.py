@@ -15,6 +15,7 @@ precedence = (
     ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
     ("left", '+', '-'),
     ("left", '*', '/'),
+    ('nonassoc', 'TRANSPOSE'),
     ("left", 'DOTADD', 'DOTSUB'),
     ("left", 'DOTMUL', 'DOTDIV')
 )
@@ -126,18 +127,7 @@ def p_value(p):
                 | FLOAT
                 | ID
                 | ID index_chain"""
-    # try:
-    #     int(p[1])
-    #     p[0] = AST.Int(p[1])
-    # except ValueError:
-    #     try:
-    #         float(p[1])
-    #         p[0] = AST.Float(p[1])
-    #     except ValueError:
-    #         if " " in p:
-    #             p[0] = AST.String(p[1])
-    #         else:
-    #             p[0] = AST.Id(p[1])
+    p[0] = p[1]
 
 
 def p_if_else(p):
@@ -185,7 +175,7 @@ def p_expression(p):
                     | expression TRANSPOSE
                     | bin_expr
                     | value"""
-
+    p[0] = p[1]
 
 def p_bin_expr(p):
     """bin_expr : expression bin_op value"""
@@ -201,4 +191,4 @@ def p_bin_op(p):
                 | DOTSUB
                 | DOTMUL
                 | DOTDIV"""
-    # p[0] = p[1]
+    p[0] = p[1]
