@@ -180,7 +180,7 @@ def p_if_else(p):
 
 def p_condition(p):
     """condition    : expression relational expression"""
-    # p[0] = AST.Condition(p[1], p[2], p[3])
+    p[0] = AST.Condition(p[1], p[2], p[3])
 
 
 def p_relational(p):
@@ -195,7 +195,7 @@ def p_relational(p):
 
 def p_while(p):
     """while    : WHILE '(' condition ')' operation"""
-    # p[0] = AST.WhileInstruction(p[3], p[5])
+    p[0] = AST.While(p[3], p[5])
 
 
 def p_for(p):
@@ -221,6 +221,7 @@ def p_expression(p):
     else:
         p[0] = p[1]
 
+
 def p_un_expr(p):
     """un_expr  : '-' expression
                 | expression TRANSPOSE"""
@@ -228,6 +229,7 @@ def p_un_expr(p):
         p[0] = AST.UniExp(p[1], p[2])
     else:
         p[0] = AST.UniExp(p[2], p[1])
+
 
 def p_bin_expr(p):
     """bin_expr : expression bin_op value"""

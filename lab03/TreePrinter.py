@@ -121,6 +121,30 @@ class TreePrinter:
         self.range.printTree(indent + 1)
         self.instruction.printTree(indent + 1)
 
+    @addToClass(AST.Condition)
+    def printTree(self, indent=0):
+        print(indent * sugar + self.op)
+        try:
+            self.left.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.left))
+        try:
+            self.right.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.right))
+
+    @addToClass(AST.While)
+    def printTree(self, indent=0):
+        print(indent * sugar + 'WHILE')
+        try:
+            self.condition.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.condition))
+        try:
+            self.instruction.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.instruction))
+
     @addToClass(AST.ValueChain)
     def printTree(self, indent=0):
         for i in range(len(self.value_list)):

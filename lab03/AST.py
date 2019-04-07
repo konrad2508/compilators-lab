@@ -14,6 +14,9 @@ class Node(object):
 # FLOAT DONE
 # INT DONE
 # STRING DONE
+# ARRAY DONE
+# MATRIX DONE
+# PRINT DONE
 # TRANSPOSE ???
 
 class Start(Node):
