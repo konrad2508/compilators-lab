@@ -31,12 +31,12 @@ class TreePrinter:
 
     @addToClass(AST.Start)
     def printTree(self, indent=0):
-        self.rest.printTree()
+        printValue(self.rest)
 
     @addToClass(AST.Operations)
     def printTree(self, indent=0):
         for i in range(len(self.operations)):
-            self.operations[i].printTree(indent)
+            printValue(self.operations[i], indent)
 
     @addToClass(AST.Assign)
     def printTree(self, indent=0):
@@ -51,9 +51,15 @@ class TreePrinter:
         printValue(self.array, 1)
         printValue(self.right, 1)
 
+    # TODO indentation
     @addToClass(AST.IndexChain)
     def printTree(self, indent=0):
-        self.index_list.printTree()
+        printValue(self.values, indent)
+
+    @addToClass(AST.Index)
+    def printTree(self, indent=0):
+        for i in range(len(self.index_list)):
+            printValue(self.index_list[i], indent)
 
     @addToClass(AST.ValueChain)
     def printTree(self, indent=0):
@@ -62,79 +68,47 @@ class TreePrinter:
 
     @addToClass(AST.MatrixChain)
     def printTree(self, indent=0):
-        self.array_list.printTree()
+        printValue(self.value, indent)
 
     @addToClass(AST.Matrix)
     def printTree(self, indent=0):
         for i in range(len(self.array_list)):
-            try:
-                self.args.printTree(indent)
-            except AttributeError:
-                print((indent) * sugar + str(self.array_list[i]))
+            printValue(self.array_list[i], indent)
 
     @addToClass(AST.Function)
     def printTree(self, indent=0):
-        print(indent * sugar + self.fun)
-        if self.args is not None:
-            try:
-                self.args.printTree(indent + 1)
-            except AttributeError:
-                print((indent + 1) * sugar + str(self.args))
+        printValue(self.fun, indent)
+        printValue(self.args, indent + 1)
 
     @addToClass(AST.BinExp)
     def printTree(self, indent=0):
-        print(indent * sugar + self.op)
-        try:
-            self.left.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.left))
-        try:
-            self.right.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.right))
+        printValue(self.op, indent)
+        printValue(self.left, indent + 1)
+        printValue(self.right, indent + 1)
 
     @addToClass(AST.UniExp)
     def printTree(self, indent=0):
-        print(indent * sugar + self.op)
-        try:
-            self.value.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.value))
+        printValue(self.op, indent)
+        printValue(self.value, indent + 1)
 
     @addToClass(AST.For)
     def printTree(self, indent=0):
-        print(indent * sugar + 'FOR')
-        try:
-            self.var.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.var))
-
-        self.range.printTree(indent + 1)
-        self.instruction.printTree(indent + 1)
+        printValue('FOR', indent)
+        printValue(self.var, indent + 1)
+        printValue(self.range, indent + 1)
+        printValue(self.instruction, indent + 1)
 
     @addToClass(AST.Condition)
     def printTree(self, indent=0):
-        print(indent * sugar + self.op)
-        try:
-            self.left.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.left))
-        try:
-            self.right.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.right))
+        printValue(self.op, indent)
+        printValue(self.left, indent + 1)
+        printValue(self.right, indent + 1)
 
     @addToClass(AST.While)
     def printTree(self, indent=0):
-        print(indent * sugar + 'WHILE')
-        try:
-            self.condition.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.condition))
-        try:
-            self.instruction.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.instruction))
+        printValue('WHILE', indent)
+        printValue(self.condition, indent + 1)
+        printValue(self.instruction, indent + 1)
 
     @addToClass(AST.ValueChain)
     def printTree(self, indent=0):
@@ -146,32 +120,26 @@ class TreePrinter:
 
     @addToClass(AST.Range)
     def printTree(self, indent=0):
-        print(indent * sugar + 'RANGE')
-        try:
-            self.start.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.start))
-        try:
-            self.end.printTree(indent + 1)
-        except AttributeError:
-            print((indent + 1) * sugar + str(self.end))
+        printValue('RANGE', indent)
+        printValue(self.start, indent + 1)
+        printValue(self.end, indent + 1)
 
     @addToClass(AST.IntNum)
     def printTree(self, indent=0):
-        print(indent * sugar + str(self.value))
+        printValue(self.value, indent)
 
     @addToClass(AST.FloatNum)
     def printTree(self, indent=0):
-        print(indent * sugar + str(self.value))
+        printValue(self.value, indent)
 
     @addToClass(AST.StringNum)
     def printTree(self, indent=0):
-        print(indent * sugar + str(self.value))
+        printValue(self.value, indent)
 
     @addToClass(AST.Variable)
     def printTree(self, indent=0):
-        print(indent * sugar + str(self.name))
+        printValue(self.name, indent)
 
     @addToClass(AST.Error)
     def printTree(self, indent=0):
-        print('ERROR')
+        printValue('ERROR')
