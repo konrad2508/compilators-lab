@@ -73,7 +73,7 @@ class TreePrinter:
     @addToClass(AST.Matrix)
     def printTree(self, indent=0):
         for i in range(len(self.array_list)):
-            printValue(self.array_list[i], indent)
+            printValue(self.array_list[i], indent + i)
 
     @addToClass(AST.Function)
     def printTree(self, indent=0):
@@ -113,10 +113,7 @@ class TreePrinter:
     @addToClass(AST.ValueChain)
     def printTree(self, indent=0):
         for i in range(len(self.value_list)):
-            try:
-                self.args.printTree(indent)
-            except AttributeError:
-                print((indent) * sugar + str(self.value_list[i]))
+            printValue(self.value_list[i], indent)
 
     @addToClass(AST.Range)
     def printTree(self, indent=0):
