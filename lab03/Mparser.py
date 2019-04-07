@@ -1,7 +1,4 @@
-import os
-import sys
-
-import ply.yacc as yacc
+import re
 
 import AST
 import scanner
@@ -84,6 +81,7 @@ def p_matrix_fun(p):
     """matrix_fun   : matrix_function '(' INT ')'"""
     p[0] = AST.Function(p[1], p[3])
 
+
 def p_index_chain(p):
     """index_chain  : '[' index ']'"""
 
@@ -98,6 +96,7 @@ def p_matrix_function(p):
                         | EYE
                         | ONES"""
     p[0] = p[1]
+
 
 def p_matrix_assignment(p):
     """matrix_assignment    : ID '=' '[' custom_matrix ']' ';'"""
@@ -119,6 +118,7 @@ def p_basic_function(p):
     else:
         p[0] = AST.Function(p[1], p[2])
 
+
 def p_value_chain(p):
     """value_chain  : value ',' value_chain
                     | """
@@ -130,6 +130,21 @@ def p_value(p):
                 | FLOAT
                 | ID
                 | ID index_chain"""
+    try:
+        int(p[1])
+        p[0] = AST.IntNum(p[1])
+    except ValueError:
+        try:
+            float(p[1])
+            p[0] = AST.FloatNum(p[1])
+        except ValueError:
+            pattern = re.compile("^[a-zA-Z]+$")
+            if pattern.match(p[1]):
+                p[0] = AST.Variable(p[1])
+            else:
+                p[0] = AST.StringNum(p[1])
+
+
     p[0] = p[1]
 
 

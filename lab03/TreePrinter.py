@@ -1,4 +1,5 @@
 from __future__ import print_function
+
 import AST
 
 
@@ -34,11 +35,11 @@ class TreePrinter:
         try:
             self.left.printTree(indent + 1)
         except AttributeError:
-            print((indent + 1) * sugar + self.left)
+            print((indent + 1) * sugar + str(self.left))
         try:
             self.right.printTree(indent + 1)
         except AttributeError:
-            print((indent + 1) * sugar + self.right)
+            print((indent + 1) * sugar + str(self.right))
 
     @addToClass(AST.Function)
     def printTree(self, indent=0):
@@ -92,7 +93,20 @@ class TreePrinter:
 
     @addToClass(AST.IntNum)
     def printTree(self, indent=0):
+        print(str(self.value))
+
+    @addToClass(AST.FloatNum)
+    def printTree(self, indent=0):
+        print(str(self.value))
+
+    @addToClass(AST.StringNum)
+    def printTree(self, indent=0):
         print(self.value)
+
+    @addToClass(AST.Variable)
+    def printTree(self, indent=0):
+        print(self.value)
+
 
     @addToClass(AST.Error)
     def printTree(self, indent=0):
