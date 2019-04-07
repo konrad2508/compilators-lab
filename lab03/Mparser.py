@@ -72,8 +72,7 @@ def p_assignment_operator(p):
 
 def p_assignment(p):
     """assignment   : ID assignment_operator matrix_fun ';'
-                    | ID assignment_operator expression ';'
-                    | ID index_chain assignment_operator expression ';'"""
+                    | ID assignment_operator expression ';'"""
     if len(p) == 5:
         p[0] = AST.Assign(p[1], p[2], p[3])
     else:
@@ -124,8 +123,7 @@ def p_basic_function(p):
     """basic_function   : BREAK ';'
                         | CONTINUE ';'
                         | RETURN value ';'
-                        | PRINT value_chain ';'
-                        | PRINT value ';'"""
+                        | PRINT value_chain ';'"""
     if p[2] == ';':
         p[0] = AST.Function(p[1], None)
     else:
