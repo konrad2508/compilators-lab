@@ -1,20 +1,19 @@
-# control flow instruction
+# special functions, initializations
 
-N = 10;
-M = 20;
-for i = 1:N {
-    for j = i:M {
-        print i, j;
-    }
-}
+A = zeros(5);  # create 5x5 matrix filled with zeros
+B = ones(7);   # create 7x7 matrix filled with ones
+I = eye(10);   # create 10x10 matrix filled with ones on diagonal and zeros elsewhere
 
-while(k>0) {
-    if(k<5)
-        i = 1;
-    else if(k<10)
-        i = 2;
-    else
-        i = 3;
+# initialize 3x3 matrix with specific values
+E1 = [ [ 1, 2, 3],
+       69,
+       [ 7, 8, 9] ];
 
-    k = k - 1;
-}
+E2 = [ 1, 2, 3;
+       4, 5, 6;
+       7, 8, 9 ] ;
+
+A[1,3] = 0 ;
+
+x = 2;
+y = 2.5;

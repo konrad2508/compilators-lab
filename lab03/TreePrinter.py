@@ -72,16 +72,15 @@ class TreePrinter:
         for i in range(len(self.index_list)):
             printValue(self.index_list[i], indent)
 
-    @addToClass(AST.MatrixChain)
+    @addToClass(AST.VectorChain)
     def printTree(self, indent=0):
         printValue(self.value, indent)
 
-    @addToClass(AST.Matrix)
+    @addToClass(AST.Vector)
     def printTree(self, indent=0):
         printValue('VECTOR', indent)
         for i in range(len(self.array_list)):
-            printValue('VECTOR', indent + 1)
-            printValue(self.array_list[i], indent + 2)
+            printValue(self.array_list[i], indent + 1)
 
     @addToClass(AST.Function)
     def printTree(self, indent=0):

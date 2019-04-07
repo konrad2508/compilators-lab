@@ -157,19 +157,14 @@ class ValueChain(Node):
         print('after : ' + str(len(self.value_list)))
 
 
-class MatrixChain(Node):
+class VectorChain(Node):
     def __init__(self, value):
         self.value = value
 
 
-class Matrix(Node):
+class Vector(Node):
     def __init__(self, array_list):
         self.array_list = array_list
-
-    def __add__(self, other):
-        print('add : ' + str(len(self.array_list)))
-        self.array_list.extend(other.array_list)
-        print('after : ' + str(len(self.array_list)))
 
 
 class Error(Node):
