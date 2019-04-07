@@ -5,3 +5,7 @@ for j = 1:10
     print j;
 
 i = 1;
+
+print i, j;
+
+A[1, 3] = 0;

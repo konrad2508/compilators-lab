@@ -65,6 +65,14 @@ class Assign(Node):
         self.right = right
 
 
+class ArrayAssign(Node):
+    def __init__(self, left, array, op, right):
+        self.left = left
+        self.array = array
+        self.op = op
+        self.right = right
+
+
 class BinExp(Node):
     def __init__(self, left, op, right):
         self.left = left
@@ -113,6 +121,31 @@ class IfElse(Node):
         self.condition = condition
         self.if_instruction = if_instruction
         self.else_instruction = else_instruction
+
+
+class Index(Node):
+    def __init__(self, index_list):
+        self.index_list = index_list
+
+    def __add__(self, other):
+        print('add : ' + str(len(self.index_list)))
+        self.index_list.extend(other.index_list)
+        print('after : ' + str(len(self.index_list)))
+
+
+class IndexChain(Node):
+    def __init__(self, values):
+        self.values = values
+
+
+class ValueChain(Node):
+    def __init__(self, value_list):
+        self.value_list = value_list
+
+    def __add__(self, other):
+        print('add : ' + str(len(self.value_list)))
+        self.value_list.extend(other.value_list)
+        print('after : ' + str(len(self.value_list)))
 
 
 class Error(Node):

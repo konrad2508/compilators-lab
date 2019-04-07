@@ -15,7 +15,6 @@ sugar = '|' + 2 * ' '
 
 
 class TreePrinter:
-
     @addToClass(AST.Node)
     def printTree(self, indent=0):
         raise Exception("printTree not defined in class " + self.__class__.__name__)
@@ -41,11 +40,42 @@ class TreePrinter:
         except AttributeError:
             print((indent + 1) * sugar + str(self.right))
 
+    @addToClass(AST.ArrayAssign)
+    def printTree(self, indent=0):
+        print(indent * sugar + self.op)
+        try:
+            self.left.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.left))
+        try:
+            self.array.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.array))
+        try:
+            self.right.printTree(indent + 1)
+        except AttributeError:
+            print((indent + 1) * sugar + str(self.right))
+
+    @addToClass(AST.IndexChain)
+    def printTree(self, indent=0):
+        self.index_list.printTree()
+
+    @addToClass(AST.ValueChain)
+    def printTree(self, indent=0):
+        for i in range(len(self.index_list)):
+            try:
+                self.args.printTree(indent)
+            except AttributeError:
+                print((indent) * sugar + str(self.index_list[i]))
+
     @addToClass(AST.Function)
     def printTree(self, indent=0):
         print(indent * sugar + self.fun)
         if self.args is not None:
-            print((indent + 1) * sugar + str(self.args))
+            try:
+                self.args.printTree(indent + 1)
+            except AttributeError:
+                print((indent + 1) * sugar + str(self.args))
 
 
     @addToClass(AST.BinExp)
@@ -79,6 +109,14 @@ class TreePrinter:
         self.range.printTree(indent + 1)
         self.instruction.printTree(indent + 1)
 
+    @addToClass(AST.ValueChain)
+    def printTree(self, indent=0):
+        for i in range(len(self.value_list)):
+            try:
+                self.args.printTree(indent)
+            except AttributeError:
+                print((indent) * sugar + str(self.value_list[i]))
+
     @addToClass(AST.Range)
     def printTree(self, indent=0):
         print(indent * sugar + 'RANGE')
@@ -106,7 +144,6 @@ class TreePrinter:
     @addToClass(AST.Variable)
     def printTree(self, indent=0):
         print(self.value)
-
 
     @addToClass(AST.Error)
     def printTree(self, indent=0):

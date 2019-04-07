@@ -74,7 +74,10 @@ def p_assignment(p):
     """assignment   : ID assignment_operator matrix_fun ';'
                     | ID assignment_operator expression ';'
                     | ID index_chain assignment_operator expression ';'"""
-    p[0] = AST.Assign(p[1], p[2], p[3])
+    if len(p) == 5:
+        p[0] = AST.Assign(p[1], p[2], p[3])
+    else:
+        p[0] = AST.ArrayAssign(p[1], p[2], p[3], p[4])
 
 
 def p_matrix_fun(p):
@@ -84,11 +87,21 @@ def p_matrix_fun(p):
 
 def p_index_chain(p):
     """index_chain  : '[' index ']'"""
+    p[0] = AST.IndexChain(p[2])
 
 
 def p_index(p):
     """index    : INT ',' index
-                | """
+                | INT"""
+    if len(p) > 2:
+        to_add = [p[1]]
+        if p[3] is not None:
+            to_add += p[3].index_list
+        p[0] = AST.Index(to_add)
+    elif len(p) == 2:
+        to_add = [p[1]]
+        p[0] = AST.Index(to_add)
+
 
 
 def p_matrix_function(p):
@@ -121,7 +134,15 @@ def p_basic_function(p):
 
 def p_value_chain(p):
     """value_chain  : value ',' value_chain
-                    | """
+                    | value"""
+    if len(p) > 2:
+        to_add = [p[1]]
+        if p[3] is not None:
+            to_add += p[3].value_list
+        p[0] = AST.ValueChain(to_add)
+    elif len(p) == 2:
+        to_add = [p[1]]
+        p[0] = AST.ValueChain(to_add)
 
 
 def p_value(p):
@@ -143,9 +164,6 @@ def p_value(p):
                 p[0] = AST.Variable(p[1])
             else:
                 p[0] = AST.StringNum(p[1])
-
-
-    p[0] = p[1]
 
 
 def p_if_else(p):
