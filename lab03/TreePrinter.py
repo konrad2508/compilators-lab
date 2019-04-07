@@ -68,6 +68,18 @@ class TreePrinter:
             except AttributeError:
                 print((indent) * sugar + str(self.index_list[i]))
 
+    @addToClass(AST.MatrixChain)
+    def printTree(self, indent=0):
+        self.array_list.printTree()
+
+    @addToClass(AST.Matrix)
+    def printTree(self, indent=0):
+        for i in range(len(self.array_list)):
+            try:
+                self.args.printTree(indent)
+            except AttributeError:
+                print((indent) * sugar + str(self.array_list[i]))
+
     @addToClass(AST.Function)
     def printTree(self, indent=0):
         print(indent * sugar + self.fun)

@@ -53,7 +53,6 @@ def p_operation(p):
 
 def p_simple_operation(p):
     """simple_operation : assignment
-                        | matrix_assignment
                         | basic_function
                         | if_else
                         | for
@@ -72,7 +71,8 @@ def p_assignment_operator(p):
 
 def p_assignment(p):
     """assignment   : ID assignment_operator matrix_fun ';'
-                    | ID assignment_operator expression ';'"""
+                    | ID assignment_operator expression ';'
+                    | ID assignment_operator custom_matrix ';'"""
     if len(p) == 5:
         p[0] = AST.Assign(p[1], p[2], p[3])
     else:
@@ -102,7 +102,6 @@ def p_index(p):
         p[0] = AST.Index(to_add)
 
 
-
 def p_matrix_function(p):
     """matrix_function  : ZEROS
                         | EYE
@@ -110,13 +109,23 @@ def p_matrix_function(p):
     p[0] = p[1]
 
 
-def p_matrix_assignment(p):
-    """matrix_assignment    : ID '=' '[' custom_matrix ']' ';'"""
-
-
 def p_custom_matrix(p):
-    """custom_matrix    : value_chain ';' custom_matrix
-                        | """
+    """custom_matrix    : '[' index_chain_chain ']'"""
+    p[0] = AST.MatrixChain(p[2])
+
+
+# TODO RENAME THIS EPICNESS
+def p_index_chain_chain(p):
+    """index_chain_chain    : index_chain ',' index_chain_chain
+                            | index_chain"""
+    if len(p) > 2:
+        to_add = [p[1]]
+        if p[3] is not None:
+            to_add += p[3].array_list
+        p[0] = AST.Matrix(to_add)
+    elif len(p) == 2:
+        to_add = [p[1]]
+        p[0] = AST.Matrix(to_add)
 
 
 def p_basic_function(p):

@@ -1,11 +1,3 @@
-A = zeros(5); # create 5x5 matrix filled with zeros
-D = A.+B' ;   # add element-wise A with transpose of B
-
-for j = 1:10
-    print j;
-
-i = 1;
-
-print i, j;
-
-A[1, 3] = 0;
+E1 = [ [ 1, 2, 3],
+       [ 4, 5, 6],
+       [ 7, 8, 9] ];
