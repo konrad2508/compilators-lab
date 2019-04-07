@@ -14,7 +14,7 @@ precedence = (
     ("left", '*', '/'),
     ("left", 'DOTADD', 'DOTSUB'),
     ("left", 'DOTMUL', 'DOTDIV'),
-    # ('nonassoc', 'TRANSPOSE'),
+    ('nonassoc', 'TRANSPOSE')
 )
 
 
@@ -70,13 +70,20 @@ def p_assignment_operator(p):
 
 
 def p_assignment(p):
-    """assignment   : ID assignment_operator matrix_fun ';'
-                    | ID assignment_operator expression ';'
-                    | ID assignment_operator custom_matrix ';'"""
-    if len(p) == 5:
-        p[0] = AST.Assign(p[1], p[2], p[3])
+    """assignment   : assignment_left assignment_operator matrix_fun ';'
+                    | assignment_left assignment_operator expression ';'
+                    | assignment_left assignment_operator custom_matrix ';'"""
+    p[0] = AST.Assign(p[1], p[2], p[3])
+
+
+def p_assignment_left(p):
+    """assignment_left  : ID index_chain
+                        | ID"""
+
+    if len(p) > 2:
+        p[0] = AST.Reference(p[1], p[2])
     else:
-        p[0] = AST.ArrayAssign(p[1], p[2], p[3], p[4])
+        p[0] = p[1]
 
 
 def p_matrix_fun(p):
@@ -176,7 +183,10 @@ def p_value(p):
 def p_if_else(p):
     """if_else  : IF '(' condition ')' operation ELSE operation
                 | IF '(' condition ')' operation %prec IFX"""
-
+    if len(p) > 6:
+        p[0] = AST.IfElse(p[3], p[5], p[7])
+    else:
+        p[0] = AST.IfElse(p[3], p[5], None)
 
 def p_condition(p):
     """condition    : expression relational expression"""

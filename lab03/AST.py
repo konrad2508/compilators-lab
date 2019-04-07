@@ -120,10 +120,10 @@ class For(Node):
 
 
 class IfElse(Node):
-    def __init__(self, condition, if_instruction, else_instruction):
+    def __init__(self, condition, then, else_then):
         self.condition = condition
-        self.if_instruction = if_instruction
-        self.else_instruction = else_instruction
+        self.then = then
+        self.else_then = else_then
 
 
 class Index(Node):
@@ -134,6 +134,12 @@ class Index(Node):
         print('add : ' + str(len(self.index_list)))
         self.index_list.extend(other.index_list)
         print('after : ' + str(len(self.index_list)))
+
+
+class Reference(Node):
+    def __init__(self, var, ind):
+        self.var = var
+        self.ind = ind
 
 
 class IndexChain(Node):

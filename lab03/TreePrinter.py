@@ -40,16 +40,22 @@ class TreePrinter:
 
     @addToClass(AST.Assign)
     def printTree(self, indent=0):
-        printValue(self.op, 0)
-        printValue(self.left, 1)
-        printValue(self.right, 1)
+        printValue(self.op, indent)
+        printValue(self.left, indent + 1)
+        printValue(self.right, indent + 1)
 
     @addToClass(AST.ArrayAssign)
     def printTree(self, indent=0):
-        printValue(self.op, 0)
-        printValue(self.left, 1)
-        printValue(self.array, 1)
-        printValue(self.right, 1)
+        printValue(self.op, indent)
+        printValue(self.left, indent + 1)
+        printValue(self.array, indent + 1)
+        printValue(self.right, indent + 1)
+
+    @addToClass(AST.Reference)
+    def printTree(self, indent=0):
+        printValue('REF', indent)
+        printValue(self.var, indent + 1)
+        printValue(self.ind, indent + 1)
 
     # TODO indentation
     @addToClass(AST.IndexChain)
@@ -72,8 +78,10 @@ class TreePrinter:
 
     @addToClass(AST.Matrix)
     def printTree(self, indent=0):
+        printValue('VECTOR', indent)
         for i in range(len(self.array_list)):
-            printValue(self.array_list[i], indent + i)
+            printValue('VECTOR', indent + 1)
+            printValue(self.array_list[i], indent + 2)
 
     @addToClass(AST.Function)
     def printTree(self, indent=0):
@@ -103,6 +111,16 @@ class TreePrinter:
         printValue(self.op, indent)
         printValue(self.left, indent + 1)
         printValue(self.right, indent + 1)
+
+    @addToClass(AST.IfElse)
+    def printTree(self, indent=0):
+        printValue('IF', indent)
+        printValue(self.condition, indent + 1)
+        printValue('THEN', indent)
+        printValue(self.then, indent + 1)
+        if self.else_then is not None:
+            printValue('ELSE', indent)
+            printValue(self.else_then, indent + 1)
 
     @addToClass(AST.While)
     def printTree(self, indent=0):
