@@ -167,6 +167,16 @@ class Vector(Node):
         self.array_list = array_list
 
 
+class MatrixChain(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class Matrix(Node):
+    def __init__(self, array_list):
+        self.array_list = array_list
+
+
 class Error(Node):
     def __init__(self):
         pass

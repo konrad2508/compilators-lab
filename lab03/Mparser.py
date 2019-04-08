@@ -72,7 +72,8 @@ def p_assignment_operator(p):
 def p_assignment(p):
     """assignment   : assignment_left assignment_operator matrix_fun ';'
                     | assignment_left assignment_operator expression ';'
-                    | assignment_left assignment_operator vector ';'"""
+                    | assignment_left assignment_operator vector ';'
+                    | assignment_left assignment_operator matrix ';'"""
     p[0] = AST.Assign(p[1], p[2], p[3])
 
 
@@ -116,23 +117,59 @@ def p_matrix_function(p):
     p[0] = p[1]
 
 
-def p_custom_vector(p):
+def p_vector(p):
     """vector    : '[' object_chain ']'"""
     p[0] = AST.VectorChain(p[2])
 
 
-def p_index_chain_chain(p):
+def p_object_chain(p):
     """object_chain     : object ',' object_chain
                         | object"""
+    to_add = [p[1]]
     if len(p) > 2:
-        to_add = [p[1]]
         if p[3] is not None:
             to_add += p[3].array_list
         p[0] = AST.Vector(to_add)
     elif len(p) == 2:
-        to_add = [p[1]]
         p[0] = AST.Vector(to_add)
 
+
+def p_custom_matrix(p):
+    """matrix   : '[' object_chain object_chains ']'"""
+
+    to_add = [p[2]]
+    if p[3] is not None:
+        to_add += p[3].array_list
+    mat = AST.Matrix(to_add)
+    p[0] = AST.MatrixChain(mat)
+
+
+def p_object_chains(p):
+    """object_chains    : ';' object_chain object_chains
+                        | ';' object_chain"""
+    to_add = [p[2]]
+    if len(p) > 3:
+        if p[3] is not None:
+            to_add += p[3].array_list
+    p[0] = AST.Matrix(to_add)
+
+
+# def p_custom_matrix(p):
+#     """matrix   : '[' matrix_row_chain ']'"""
+#     p[0] = AST.MatrixChain(p[2])
+#
+#
+# def p_matrix_row_chain(p):
+#     """matrix_row_chain : object_chain ';' matrix_row_chain
+#                         | object_chain"""
+#     if len(p) > 2:
+#         to_add = [p[1]]
+#         if p[3] is not None:
+#             to_add += p[3].array_list
+#         p[0] = AST.Vector(to_add)
+#     elif len(p) == 2:
+#         to_add = [p[1]]
+#         p[0] = AST.Vector(to_add)
 
 # add matrix
 def p_object(p):
@@ -140,8 +177,10 @@ def p_object(p):
                 | INT
                 | FLOAT
                 | assignment_left
-                | vector"""
+                | vector
+                | matrix"""
     p[0] = p[1]
+
 
 def p_basic_function(p):
     """basic_function   : BREAK ';'
@@ -195,6 +234,7 @@ def p_if_else(p):
         p[0] = AST.IfElse(p[3], p[5], p[7])
     else:
         p[0] = AST.IfElse(p[3], p[5], None)
+
 
 def p_condition(p):
     """condition    : expression relational expression"""
