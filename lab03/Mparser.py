@@ -81,8 +81,8 @@ def p_assignment_operator(p):
 def p_assignment(p):
     """assignment   : element assignment_operator matrix_fun ';'
                     | element assignment_operator expression ';'
-                    | element assignment_operator vector ';'
-                    | element assignment_operator matrix ';'"""
+                    | element assignment_operator vector
+                    | element assignment_operator matrix"""
     p[0] = AST.Assign(p[1], p[2], p[3])
 
 
