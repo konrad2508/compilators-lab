@@ -4,11 +4,26 @@ import Mparser
 import os
 from TreePrinter import TreePrinter
 
+# TODO ######################################################################################################
+#                                                                                                           #
+#       1) Wyjebac shift/reduce konflikty                                                                   #
+#           - tak naprawde sa 3, bo 9 jest takich samych                                                    #
+#           - nie wyglada to na cos waznego, bo wszystko dziala prawidlowo nawet z nimi                     #
+#           - te 9 powstalo z zamiany w p_bin_expr prawej strony dzialania z 'value' na 'expression'        #
+#           - reszta powstala z podmiany 'value' na 'object' w p_expression                                 #
+#       2) Cleanup kodu                                                                                     #
+#           - wydupczenie jakis niepotrzebnych debugowych printow                                           #
+#           - jakies cos zrobienie by sie dalo cos powiedziec o tym kodzie bo obecnie                       #
+#             to jeden wielki clusterfuck                                                                   #
+#       3) Przetestowanie dla innych skrajnych przypadkow                                                   #
+#                                                                                                           #
+# TODO ######################################################################################################
+
 if __name__ == '__main__':
     filename = ""
 
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example2.m"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "example0.m"
         file = open(filename, "r")
     except IOError:
         print("Cannot open {0} file".format(filename))
