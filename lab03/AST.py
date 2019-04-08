@@ -157,22 +157,22 @@ class ValueChain(Node):
         print('after : ' + str(len(self.value_list)))
 
 
-class VectorChain(Node):
+class Vector(Node):
     def __init__(self, value):
         self.value = value
 
 
-class Vector(Node):
+class VectorValues(Node):
     def __init__(self, array_list):
         self.array_list = array_list
 
 
-class MatrixChain(Node):
+class Matrix(Node):
     def __init__(self, value):
         self.value = value
 
 
-class Matrix(Node):
+class MatrixRows(Node):
     def __init__(self, array_list):
         self.array_list = array_list
 

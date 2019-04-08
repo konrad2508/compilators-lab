@@ -72,22 +72,22 @@ class TreePrinter:
         for i in range(len(self.index_list)):
             printValue(self.index_list[i], indent)
 
-    @addToClass(AST.VectorChain)
+    @addToClass(AST.Vector)
     def printTree(self, indent=0):
         printValue('VECTOR', indent)
         printValue(self.value, indent + 1)
 
-    @addToClass(AST.Vector)
+    @addToClass(AST.VectorValues)
     def printTree(self, indent=0):
         for i in range(len(self.array_list)):
             printValue(self.array_list[i], indent)
 
-    @addToClass(AST.MatrixChain)
+    @addToClass(AST.Matrix)
     def printTree(self, indent=0):
         printValue('MATRIX', indent)
         printValue(self.value, indent + 1)
 
-    @addToClass(AST.Matrix)
+    @addToClass(AST.MatrixRows)
     def printTree(self, indent=0):
         for i in range(len(self.array_list)):
             printValue('ROW', indent)
@@ -106,7 +106,10 @@ class TreePrinter:
 
     @addToClass(AST.UniExp)
     def printTree(self, indent=0):
-        printValue(self.op, indent)
+        if self.op == "'":
+            printValue('TRANSPOSE', indent)
+        else:
+            printValue('NEG', indent)
         printValue(self.value, indent + 1)
 
     @addToClass(AST.For)

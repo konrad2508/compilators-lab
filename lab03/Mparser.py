@@ -14,7 +14,7 @@ precedence = (
     ("left", '*', '/'),
     ("left", 'DOTADD', 'DOTSUB'),
     ("left", 'DOTMUL', 'DOTDIV'),
-    ('nonassoc', 'TRANSPOSE')
+    ('nonassoc', 'TRANSPOSE'),
 )
 
 
@@ -70,16 +70,16 @@ def p_assignment_operator(p):
 
 
 def p_assignment(p):
-    """assignment   : assignment_left assignment_operator matrix_fun ';'
-                    | assignment_left assignment_operator expression ';'
-                    | assignment_left assignment_operator vector ';'
-                    | assignment_left assignment_operator matrix ';'"""
+    """assignment   : element assignment_operator matrix_fun ';'
+                    | element assignment_operator expression ';'
+                    | element assignment_operator vector ';'
+                    | element assignment_operator matrix ';'"""
     p[0] = AST.Assign(p[1], p[2], p[3])
 
 
-def p_assignment_left(p):
-    """assignment_left  : ID index_chain
-                        | ID"""
+def p_element(p):
+    """element  : ID index_chain
+                | ID"""
 
     if len(p) > 2:
         p[0] = AST.Reference(p[1], p[2])
@@ -119,7 +119,7 @@ def p_matrix_function(p):
 
 def p_vector(p):
     """vector    : '[' object_chain ']'"""
-    p[0] = AST.VectorChain(p[2])
+    p[0] = AST.Vector(p[2])
 
 
 def p_object_chain(p):
@@ -129,9 +129,9 @@ def p_object_chain(p):
     if len(p) > 2:
         if p[3] is not None:
             to_add += p[3].array_list
-        p[0] = AST.Vector(to_add)
+        p[0] = AST.VectorValues(to_add)
     elif len(p) == 2:
-        p[0] = AST.Vector(to_add)
+        p[0] = AST.VectorValues(to_add)
 
 
 def p_custom_matrix(p):
@@ -140,8 +140,8 @@ def p_custom_matrix(p):
     to_add = [p[2]]
     if p[3] is not None:
         to_add += p[3].array_list
-    mat = AST.Matrix(to_add)
-    p[0] = AST.MatrixChain(mat)
+    mat = AST.MatrixRows(to_add)
+    p[0] = AST.Matrix(mat)
 
 
 def p_object_chains(p):
@@ -151,32 +151,11 @@ def p_object_chains(p):
     if len(p) > 3:
         if p[3] is not None:
             to_add += p[3].array_list
-    p[0] = AST.Matrix(to_add)
+    p[0] = AST.MatrixRows(to_add)
 
 
-# def p_custom_matrix(p):
-#     """matrix   : '[' matrix_row_chain ']'"""
-#     p[0] = AST.MatrixChain(p[2])
-#
-#
-# def p_matrix_row_chain(p):
-#     """matrix_row_chain : object_chain ';' matrix_row_chain
-#                         | object_chain"""
-#     if len(p) > 2:
-#         to_add = [p[1]]
-#         if p[3] is not None:
-#             to_add += p[3].array_list
-#         p[0] = AST.Vector(to_add)
-#     elif len(p) == 2:
-#         to_add = [p[1]]
-#         p[0] = AST.Vector(to_add)
-
-# add matrix
 def p_object(p):
-    """object   : STRING
-                | INT
-                | FLOAT
-                | assignment_left
+    """object   : value
                 | vector
                 | matrix"""
     p[0] = p[1]
@@ -210,8 +189,7 @@ def p_value(p):
     """value    : STRING
                 | INT
                 | FLOAT
-                | ID
-                | ID index_chain"""
+                | element"""
     try:
         int(p[1])
         p[0] = AST.IntNum(p[1])
@@ -273,7 +251,7 @@ def p_expression(p):
     """expression   : '(' expression ')'
                     | bin_expr
                     | un_expr
-                    | value"""
+                    | object"""
     if p[1] == '(':
         p[0] = p[2]
     else:
@@ -290,7 +268,7 @@ def p_un_expr(p):
 
 
 def p_bin_expr(p):
-    """bin_expr : expression bin_op value"""
+    """bin_expr : expression bin_op expression"""
     p[0] = AST.BinExp(p[1], p[2], p[3])
 
 
