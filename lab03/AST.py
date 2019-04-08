@@ -2,23 +2,6 @@ class Node(object):
     pass
 
 
-# IF-ELSE DONE
-# FOR DONE
-# WHILE DONE
-# BREAK, CONTINUE done
-# EYE, ZEROS, ONES, PRINT, RETURN DONE
-# DOTADD etc DONE
-# ADDASSIGN etc DONE
-# LTE GTE etc DONE
-# ID DONE
-# FLOAT DONE
-# INT DONE
-# STRING DONE
-# ARRAY DONE
-# MATRIX DONE
-# PRINT DONE
-# TRANSPOSE ???
-
 class Start(Node):
     def __init__(self, rest):
         self.rest = rest
@@ -29,9 +12,7 @@ class Operations(Node):
         self.operations = operations
 
     def __add__(self, other):
-        print('add : ' + str(len(self.operations)))
         self.operations.extend(other.operations)
-        print('after : ' + str(len(self.operations)))
 
 
 class IntNum(Node):
@@ -131,9 +112,7 @@ class Index(Node):
         self.index_list = index_list
 
     def __add__(self, other):
-        print('add : ' + str(len(self.index_list)))
         self.index_list.extend(other.index_list)
-        print('after : ' + str(len(self.index_list)))
 
 
 class Reference(Node):
@@ -152,9 +131,7 @@ class ValueChain(Node):
         self.value_list = value_list
 
     def __add__(self, other):
-        print('add : ' + str(len(self.value_list)))
         self.value_list.extend(other.value_list)
-        print('after : ' + str(len(self.value_list)))
 
 
 class Vector(Node):

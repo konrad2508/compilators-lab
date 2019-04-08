@@ -57,7 +57,6 @@ class TreePrinter:
         printValue(self.var, indent + 1)
         printValue(self.ind, indent + 1)
 
-    # TODO indentation
     @addToClass(AST.IndexChain)
     def printTree(self, indent=0):
         printValue(self.values, indent)

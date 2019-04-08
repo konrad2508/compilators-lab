@@ -26,10 +26,14 @@ def p_error(p):
         print("Unexpected end of input")
 
 
+# Program start
+
 def p_start(p):
     """start    : operation_chain"""
     p[0] = AST.Start(p[1])
 
+
+# Recursive operations
 
 def p_operation_chain(p):
     """operation_chain  : operation operation_chain
@@ -41,10 +45,11 @@ def p_operation_chain(p):
         p[0] = AST.Operations(to_add)
 
 
+# Operation block or operation
+
 def p_operation(p):
     """operation    : '{' operation_chain '}'
                     | simple_operation"""
-
     if len(p) > 2:
         p[0] = p[2]
     else:
@@ -60,6 +65,8 @@ def p_simple_operation(p):
     p[0] = AST.Operations([p[1]])
 
 
+# Assignment operators
+
 def p_assignment_operator(p):
     """assignment_operator  : '='
                             | ADDASSIGN
@@ -69,6 +76,8 @@ def p_assignment_operator(p):
     p[0] = p[1]
 
 
+# All types of assignments
+
 def p_assignment(p):
     """assignment   : element assignment_operator matrix_fun ';'
                     | element assignment_operator expression ';'
@@ -76,6 +85,8 @@ def p_assignment(p):
                     | element assignment_operator matrix ';'"""
     p[0] = AST.Assign(p[1], p[2], p[3])
 
+
+# Either a variable or a vector
 
 def p_element(p):
     """element  : ID index_chain
@@ -87,15 +98,30 @@ def p_element(p):
         p[0] = p[1]
 
 
+# Matrix functions like ZEROS, ...
+
 def p_matrix_fun(p):
     """matrix_fun   : matrix_function '(' INT ')'"""
     p[0] = AST.Function(p[1], p[3])
 
 
+# Matrix function type
+
+def p_matrix_function(p):
+    """matrix_function  : ZEROS
+                        | EYE
+                        | ONES"""
+    p[0] = p[1]
+
+
+# Array
+
 def p_index_chain(p):
     """index_chain  : '[' index ']'"""
     p[0] = AST.IndexChain(p[2])
 
+
+# Array as a list of integers
 
 def p_index(p):
     """index    : INT ',' index
@@ -110,17 +136,14 @@ def p_index(p):
         p[0] = AST.Index(to_add)
 
 
-def p_matrix_function(p):
-    """matrix_function  : ZEROS
-                        | EYE
-                        | ONES"""
-    p[0] = p[1]
-
+# Vector and matrix
 
 def p_vector(p):
     """vector    : '[' object_chain ']'"""
     p[0] = AST.Vector(p[2])
 
+
+# Vector as a list of objects
 
 def p_object_chain(p):
     """object_chain     : object ',' object_chain
@@ -161,6 +184,8 @@ def p_object(p):
     p[0] = p[1]
 
 
+# Flow control functions
+
 def p_basic_function(p):
     """basic_function   : BREAK ';'
                         | CONTINUE ';'
@@ -171,6 +196,8 @@ def p_basic_function(p):
     else:
         p[0] = AST.Function(p[1], p[2])
 
+
+# List of print variables
 
 def p_value_chain(p):
     """value_chain  : value ',' value_chain
@@ -184,6 +211,8 @@ def p_value_chain(p):
         to_add = [p[1]]
         p[0] = AST.ValueChain(to_add)
 
+
+# Simple values
 
 def p_value(p):
     """value    : STRING
@@ -205,6 +234,8 @@ def p_value(p):
                 p[0] = AST.StringNum(p[1])
 
 
+# If else flow
+
 def p_if_else(p):
     """if_else  : IF '(' condition ')' operation ELSE operation
                 | IF '(' condition ')' operation %prec IFX"""
@@ -214,10 +245,14 @@ def p_if_else(p):
         p[0] = AST.IfElse(p[3], p[5], None)
 
 
+# Condition operation
+
 def p_condition(p):
     """condition    : expression relational expression"""
     p[0] = AST.Condition(p[1], p[2], p[3])
 
+
+# Relational operators
 
 def p_relational(p):
     """relational   : '>'
@@ -229,6 +264,8 @@ def p_relational(p):
     p[0] = p[1]
 
 
+# Loops
+
 def p_while(p):
     """while    : WHILE '(' condition ')' operation"""
     p[0] = AST.While(p[3], p[5])
@@ -239,6 +276,8 @@ def p_for(p):
     p[0] = AST.For(p[2], p[4], p[5])
 
 
+# For loop range
+
 def p_range(p):
     """range    : ID ':' INT
                 | INT ':' ID
@@ -246,6 +285,8 @@ def p_range(p):
                 | INT ':' INT"""
     p[0] = AST.Range(p[1], p[3])
 
+
+# Types of operations
 
 def p_expression(p):
     """expression   : '(' expression ')'
@@ -271,6 +312,8 @@ def p_bin_expr(p):
     """bin_expr : expression bin_op expression"""
     p[0] = AST.BinExp(p[1], p[2], p[3])
 
+
+# Binary operators
 
 def p_bin_op(p):
     """bin_op   : '+'
