@@ -86,7 +86,7 @@ def p_assignment(p):
     p[0] = AST.Assign(p[1], p[2], p[3])
 
 
-# Either a variable or a vector
+# Either a variable or an element from a vector/matrix
 
 def p_element(p):
     """element  : ID index_chain
@@ -114,14 +114,14 @@ def p_matrix_function(p):
     p[0] = p[1]
 
 
-# Array
+# Index of the vector/matrix
 
 def p_index_chain(p):
     """index_chain  : '[' index ']'"""
     p[0] = AST.IndexChain(p[2])
 
 
-# Array as a list of integers
+# Index as a list of integers
 
 def p_index(p):
     """index    : INT ',' index
@@ -143,7 +143,7 @@ def p_vector(p):
     p[0] = AST.Vector(p[2])
 
 
-# Vector as a list of objects
+# Vector as a 1D list of objects
 
 def p_object_chain(p):
     """object_chain     : object ',' object_chain
@@ -156,6 +156,8 @@ def p_object_chain(p):
     elif len(p) == 2:
         p[0] = AST.VectorValues(to_add)
 
+
+# Matrix as a multidimensional list of objects (at least 2D)
 
 def p_custom_matrix(p):
     """matrix   : '[' object_chain object_chains ']'"""
@@ -176,6 +178,8 @@ def p_object_chains(p):
             to_add += p[3].array_list
     p[0] = AST.MatrixRows(to_add)
 
+
+# Possible objects
 
 def p_object(p):
     """object   : value
