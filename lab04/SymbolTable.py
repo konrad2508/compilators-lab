@@ -1,6 +1,3 @@
-#!/usr/bin/python
-
-
 class Symbol(object):
     pass
 

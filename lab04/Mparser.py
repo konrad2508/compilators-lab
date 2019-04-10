@@ -92,10 +92,11 @@ def p_element(p):
     """element  : ID index_chain
                 | ID"""
 
+    left = AST.Variable(p[1])
     if len(p) > 2:
-        p[0] = AST.Reference(p[1], p[2])
+        p[0] = AST.Reference(left, p[2])
     else:
-        p[0] = p[1]
+        p[0] = left
 
 
 # Matrix functions like ZEROS, ...
