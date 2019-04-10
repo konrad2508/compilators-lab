@@ -1,23 +1,21 @@
-import sys
-import ply.yacc as yacc
-import scanner
 import os
+import sys
+
+import ply.yacc as yacc
+
+import scanner
 
 tokens = scanner.tokens
 
 precedence = (
-    ("nonassoc", "IF"),
+    ("nonassoc", "IFX"),
     ("nonassoc", "ELSE"),
-    ("nonassoc", "FOR", "WHILE"),
-    ("nonassoc", "BREAK", "CONTINUE"),
-    ("nonassoc", "EYE", "ZEROS", "ONES", "PRINT", "RETURN"),
+    ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),
+    ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
     ("left", '+', '-'),
     ("left", '*', '/'),
     ("left", 'DOTADD', 'DOTSUB'),
-    ("left", 'DOTMUL', 'DOTDIV'),
-    ('nonassoc', 'TRANSPOSE'),
-    ("left", '<', '>', 'LTE', 'GTE', 'NEQ', 'EQ'),
-    ("left", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN')
+    ("left", 'DOTMUL', 'DOTDIV')
 )
 
 
@@ -30,39 +28,44 @@ def p_error(p):
 
 
 def p_start(p):
-    """start    : operation"""
+    """start    : operation_chain"""
 
 
-def p_dupcio(p):
-    """operation    : operation operation
-                    | '{' operation '}'
+def p_operation_chain(p):
+    """operation_chain  : operation operation_chain
+                        | """
+
+
+def p_operation(p):
+    """operation    : '{' operation_chain '}'
                     | simple_operation"""
 
 
 def p_simple_operation(p):
     """simple_operation : assignment
                         | matrix_assignment
-                        | spec_function
-                        | if_flow
-                        | for_flow
-                        | while_flow"""
+                        | basic_function
+                        | if_else
+                        | for
+                        | while"""
 
 
-def p_assignment_op(p):
-    """assignment_op    : '='
-                        | ADDASSIGN
-                        | SUBASSIGN
-                        | MULASSIGN
-                        | DIVASSIGN"""
+def p_assignment_operator(p):
+    """assignment_operator  : '='
+                            | ADDASSIGN
+                            | SUBASSIGN
+                            | MULASSIGN
+                            | DIVASSIGN"""
 
 
 def p_assignment(p):
-    """assignment   : ID assignment_op assignment_expression
-                    | ID element assignment_op expression"""
+    """assignment   : ID assignment_operator matrix_function '(' INT ')' ';'
+                    | ID assignment_operator expression ';'
+                    | ID index_chain assignment_operator expression ';'"""
 
 
-def p_element(p):
-    """element  : '[' index ']'"""
+def p_index_chain(p):
+    """index_chain  : '[' index ']'"""
 
 
 def p_index(p):
@@ -70,20 +73,10 @@ def p_index(p):
                 | INT ',' index"""
 
 
-def p_assignment_expression(p):
-    """assignment_expression    : matrix_func '(' INT ')' ';'
-                                | expression"""
-
-
-def p_matrix_func(p):
-    """matrix_func  : ZEROS
-                    | EYE
-                    | ONES"""
-
-
-def p_simple_val(p):
-    """simple_val   : INT
-                    | FLOAT"""
+def p_matrix_function(p):
+    """matrix_function  : ZEROS
+                        | EYE
+                        | ONES"""
 
 
 def p_matrix_assignment(p):
@@ -91,84 +84,73 @@ def p_matrix_assignment(p):
 
 
 def p_custom_matrix(p):
-    """custom_matrix    : matrix_row
-                        | matrix_row additional_matrix_row"""
+    """custom_matrix    : value_chain
+                        | value_chain ';' custom_matrix"""
 
 
-def p_additional_matrix_row(p):
-    """additional_matrix_row    : additional_matrix_row additional_matrix_row
-                                | ';' matrix_row"""
-
-
-def p_matrix_row(p):
-    """matrix_row   : simple_val
-                    | simple_val additional_simple_val"""
-
-
-def p_additional_simple_val(p):
-    """additional_simple_val    : additional_simple_val additional_simple_val
-                                | ',' simple_val"""
-
-
-def p_spec_function(p):
-    """spec_function    : BREAK ';'
+def p_basic_function(p):
+    """basic_function   : BREAK ';'
                         | CONTINUE ';'
-                        | RETURN extended_val ';'
-                        | PRINT extended_val ';'"""
+                        | RETURN value ';'
+                        | PRINT value_chain ';'"""
 
 
-def p_extended_val(p):
-    """extended_val : STRING
-                    | val"""
+def p_value_chain(p):
+    """value_chain  : value
+                    | value ',' value_chain"""
 
 
-def p_val(p):
-    """val  : ID
-            | ID element
-            | simple_val
-            | val ',' ID"""
+def p_value(p):
+    """value    : STRING
+                | INT
+                | FLOAT
+                | ID
+                | ID index_chain"""
 
 
-def p_if_flow(p):
-    """if_flow  : IF '(' condition ')' next_op
-                | IF '(' condition ')' next_op ELSE next_op"""
+def p_if_else(p):
+    """if_else  : IF '(' condition ')' operation ELSE operation
+                | IF '(' condition ')' operation %prec IFX"""
 
 
-def p_condition_val(p):
-    """condition    : simple_val '>' simple_expression
-                    | simple_val '<' simple_expression
-                    | simple_val GTE simple_expression
-                    | simple_val LTE simple_expression
-                    | simple_val NEQ simple_expression
-                    | simple_val EQ simple_expression"""
+def p_condition(p):
+    """condition    : expression relational expression"""
 
 
-def p_condition_id(p):
-    """condition    : ID '>' simple_expression
-                    | ID '<' simple_expression
-                    | ID GTE simple_expression
-                    | ID LTE simple_expression
-                    | ID NEQ simple_expression
-                    | ID EQ simple_expression"""
+def p_relational(p):
+    """relational   : '>'
+                    | '<'
+                    | GTE
+                    | LTE
+                    | NEQ
+                    | EQ """
 
 
-def p_next_op(p):
-    """next_op  : simple_operation
-                | '{' operation '}'"""
+def p_while(p):
+    """while    : WHILE '(' condition ')' operation"""
 
 
-def p_while_flow(p):
-    """while_flow   : WHILE '(' condition ')' next_op"""
-
-
-def p_for_flow(p):
-    """for_flow : FOR ID '=' range next_op"""
+def p_for(p):
+    """for  : FOR ID '=' range operation"""
 
 
 def p_range(p):
-    """range    : INT ':' INT
+    """range    : ID ':' INT
                 | INT ':' ID
                 | ID ':' ID"""
+
+
+def p_expression(p):
+    """expression   : '(' expression ')'
+                    | '-' expression
+                    | expression TRANSPOSE
+                    | bin_expr
+                    | value"""
+
+
+def p_bin_expr(p):
+    """bin_expr     : expression bin_op value
+                    | expression bin_op '(' expression ')'"""
 
 
 def p_bin_op(p):
@@ -180,22 +162,6 @@ def p_bin_op(p):
                 | DOTSUB
                 | DOTMUL
                 | DOTDIV"""
-
-
-def p_un_op(p):
-    """un_op    : '-'"""
-
-
-def p_expression(p):
-    """expression   : simple_expression ';'"""
-
-
-def p_simple_expression(p):
-    """simple_expression    : simple_expression bin_op simple_expression
-                            | un_op simple_expression
-                            | simple_expression TRANSPOSE
-                            | '(' simple_expression ')'
-                            | val"""
 
 
 if __name__ == '__main__':

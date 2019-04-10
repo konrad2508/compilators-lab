@@ -5,11 +5,20 @@ B = ones(7);   # create 7x7 matrix filled with ones
 I = eye(10);   # create 10x10 matrix filled with ones on diagonal and zeros elsewhere
 
 # initialize 3x3 matrix with specific values
-E1 = [ 1, 2, 3;
+E1 = [ [ 1, 2, 3], 69, [ 7, 8, 9] ];
+
+E2 = [ 1, 2, 3;
        4, 5, 6;
-       7, 8, 9 ] ;
+       7, 8, 9;
+       10, 11, [1, 2, 3];
+       12, 13, [
+            1, 2, 3;
+            4, 5, 6;
+            7, 8, 9
+       ]] ;
 
 A[1,3] = 0 ;
 
 x = 2;
 y = 2.5;
+z = [1,2,3] + [4,5,6];

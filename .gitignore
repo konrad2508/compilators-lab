@@ -1,4 +1,6 @@
+# user defined
 .idea/
+lab03/example_tree/out.tree
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
