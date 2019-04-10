@@ -25,4 +25,6 @@ if __name__ == '__main__':
     parser = yacc.yacc(module=Mparser)
     text = file.read()
     ast = parser.parse(text, lexer=scanner.lexer)
+
+    sys.stdout = open('example_tree/out.tree', 'w+')
     ast.printTree()

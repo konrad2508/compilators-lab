@@ -2,20 +2,6 @@ class Node(object):
     pass
 
 
-# IF-ELSE DONE
-# FOR DONE
-# WHILE DONE
-# BREAK, CONTINUE done
-# EYE, ZEROS, ONES, PRINT, RETURN DONE
-# DOTADD etc DONE
-# ADDASSIGN etc DONE
-# LTE GTE etc DONE
-# ID DONE
-# FLOAT DONE
-# INT DONE
-# STRING DONE
-# TRANSPOSE ???
-
 class Start(Node):
     def __init__(self, rest):
         self.rest = rest
@@ -26,9 +12,7 @@ class Operations(Node):
         self.operations = operations
 
     def __add__(self, other):
-        print('add : ' + str(len(self.operations)))
         self.operations.extend(other.operations)
-        print('after : ' + str(len(self.operations)))
 
 
 class IntNum(Node):
@@ -61,6 +45,14 @@ class Condition(Node):
 class Assign(Node):
     def __init__(self, left, op, right):
         self.left = left
+        self.op = op
+        self.right = right
+
+
+class ArrayAssign(Node):
+    def __init__(self, left, array, op, right):
+        self.left = left
+        self.array = array
         self.op = op
         self.right = right
 
@@ -109,10 +101,57 @@ class For(Node):
 
 
 class IfElse(Node):
-    def __init__(self, condition, if_instruction, else_instruction):
+    def __init__(self, condition, then, else_then):
         self.condition = condition
-        self.if_instruction = if_instruction
-        self.else_instruction = else_instruction
+        self.then = then
+        self.else_then = else_then
+
+
+class Index(Node):
+    def __init__(self, index_list):
+        self.index_list = index_list
+
+    def __add__(self, other):
+        self.index_list.extend(other.index_list)
+
+
+class Reference(Node):
+    def __init__(self, var, ind):
+        self.var = var
+        self.ind = ind
+
+
+class IndexChain(Node):
+    def __init__(self, values):
+        self.values = values
+
+
+class ValueChain(Node):
+    def __init__(self, value_list):
+        self.value_list = value_list
+
+    def __add__(self, other):
+        self.value_list.extend(other.value_list)
+
+
+class Vector(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class VectorValues(Node):
+    def __init__(self, array_list):
+        self.array_list = array_list
+
+
+class Matrix(Node):
+    def __init__(self, value):
+        self.value = value
+
+
+class MatrixRows(Node):
+    def __init__(self, array_list):
+        self.array_list = array_list
 
 
 class Error(Node):
