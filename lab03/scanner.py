@@ -1,4 +1,3 @@
-import sys
 import ply.lex as lex
 
 reserved = {
@@ -17,10 +16,10 @@ reserved = {
 
 tokens = (
              'WHITESPACE', 'COMMENT', 'DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN',
-             'DIVASSIGN', 'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING'
+             'DIVASSIGN', 'LTE', 'GTE', 'NEQ', 'EQ', 'ID', 'FLOAT', 'INT', 'STRING', 'TRANSPOSE'
          ) + tuple(reserved.values())
 
-literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', "'", ',']
+literals = ['+', '-', '*', '/', '=', '<', '>', '(', ')', '[', ']', '{', '}', ':', ';', ',']
 t_ignore = '\t'
 
 
@@ -37,7 +36,7 @@ def t_WHITESPACE(t):
 
 def t_COMMENT(t):
     r'\#.*'
-    # do nothing
+    pass
 
 
 t_DOTADD = r'\.\+'
@@ -52,6 +51,7 @@ t_LTE = r'<='
 t_GTE = r'>='
 t_NEQ = r'!='
 t_EQ = r'=='
+t_TRANSPOSE = r"'"
 
 
 def t_ID(t):
@@ -95,18 +95,5 @@ def find_tok_column(t):
     return lexer.charno
 
 
-if __name__ == '__main__':
-    try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else 'example_full.txt'
-        file = open(filename, "r")
-    except IOError:
-        print("Cannot open {0} file".format(filename))
-        sys.exit(0)
-
-    lexer = lex.lex()
-    lexer.charno = 1
-    fh = open(filename, "r")
-    lexer.input(fh.read())
-    for token in lexer:
-        print("(%d, %d): %s(%s)" % (token.lineno, lexer.charno, token.type, token.value))
-        lexer.charno += len(str(token.value))
+lexer = lex.lex()
+lexer.charno = 1
