@@ -70,11 +70,19 @@ class TypeChecker(NodeVisitor):
             elif op in normalOps:
                 self.errors.append("Error: Wrong operator type")
             elif isinstance(typeRight, AST.Matrix):
-                self.visit(typeLeft)
-                self.visit(typeRight)
+                leftSize = self.visit(typeLeft)
+                rightSize = self.visit(typeRight)
+
+                if op == '.+' or op == '.-':
+                    if leftSize[0] != rightSize[0] or leftSize[1] != rightSize[1]:
+                        self.errors.append("Error: Matrices sizes should match")
+                else:
+                    if leftSize[0] != rightSize[1] or leftSize[1] != rightSize[0]:
+                        self.errors.append("Error: Matrices sizes should match")
+
 
     def visit_Matrix(self, node):
-        self.visit(node.value)
+        return self.visit(node.value)
 
     def visit_MatrixRows(self, node):
         prevLen = -1
@@ -85,6 +93,10 @@ class TypeChecker(NodeVisitor):
                 prevLen = newLen
             elif prevLen != newLen:
                 self.errors.append("Error: Rows length does not match")
+
+        valueList = [len(node.array_list), prevLen]
+
+        return valueList
 
     def visit_VectorValues(self, node):
         return len(node.array_list)
