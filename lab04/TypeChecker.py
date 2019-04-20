@@ -3,9 +3,11 @@ import AST
 
 # typ['+']['int']['float'] = 'float'
 class NodeVisitor(object):
-
     def __init__(self):
         self.errors = []
+
+    def get_errors(self):
+        return self.errors
 
     def visit(self, node):
         method = 'visit_' + node.__class__.__name__
@@ -17,7 +19,6 @@ class NodeVisitor(object):
 
 
 class TypeChecker(NodeVisitor):
-
     def visit_Start(self, node):
         self.visit(node.rest)
 
@@ -29,21 +30,64 @@ class TypeChecker(NodeVisitor):
         self.visit(node.left)
         self.visit(node.right)
 
+    def visit_Function(self, node):
+        args = node.args
+
+        if not isinstance(args, int):
+            self.errors.append("Error: Function argument must be an integer")
+
     def visit_BinExp(self, node):
-        type1 = self.visit(node.left)
-        type2 = self.visit(node.right)
+        typeLeft = node.left
+        typeRight = node.right
         op = node.op
 
-        args = [node.left, node.right]
+        normalOps = ['+', '-', '*', '/']
+        matrixOps = ['.+', '.-', '.*', './']
 
-        if any(isinstance(e, AST.Vector) for e in args):
-            print("AHHHHHH")
+        if isinstance(typeLeft, AST.IntNum) or isinstance(typeLeft, AST.FloatNum):
+            if not isinstance(typeRight, AST.IntNum) or not isinstance(typeRight, AST.FloatNum):
+                self.errors.append("Error: Wrong types of arguments")
+            elif op in matrixOps:
+                self.errors.append("Error: Wrong operator type")
+        elif isinstance(typeLeft, AST.StringNum):
+            if not isinstance(typeRight, AST.Variable):
+                self.errors.append("Error: Wrong types of arguments")
+            elif not op == '-' or not op == '+':
+                self.errors.append("Error: Wrong operator type")
+        elif isinstance(typeLeft, AST.StringNum):
+            if not isinstance(typeRight, AST.StringNum):
+                self.errors.append("Error: Wrong types of arguments")
+            elif not op == '-' or not op == '+':
+                self.errors.append("Error: Wrong operator type")
+        elif isinstance(typeLeft, AST.Vector):
+            if not isinstance(typeRight, AST.Vector):
+                self.errors.append("Error: Wrong types of arguments")
+            elif op in normalOps:
+                self.errors.append("Error: Wrong operator type")
+        elif isinstance(typeLeft, AST.Matrix):
+            if not isinstance(typeRight, AST.Matrix):
+                self.errors.append("Error: Wrong types of arguments")
+            elif op in normalOps:
+                self.errors.append("Error: Wrong operator type")
+            elif isinstance(typeRight, AST.Matrix):
+                self.visit(typeLeft)
+                self.visit(typeRight)
 
-    def visit_Vector(self, node):
-        pass
+    def visit_Matrix(self, node):
+        self.visit(node.value)
 
-    def visit_IntNum(self, node):
-        pass
+    def visit_MatrixRows(self, node):
+        prevLen = -1
+
+        for row in node.array_list:
+            newLen = self.visit(row)
+            if prevLen == -1:
+                prevLen = newLen
+            elif prevLen != newLen:
+                self.errors.append("Error: Rows length does not match")
+
+    def visit_VectorValues(self, node):
+        return len(node.array_list)
 
     def visit_Variable(self, node):
         pass

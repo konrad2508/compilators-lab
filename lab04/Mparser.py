@@ -1,5 +1,3 @@
-import re
-
 import AST
 import scanner
 
@@ -102,7 +100,7 @@ def p_element(p):
 # Matrix functions like ZEROS, ...
 
 def p_matrix_fun(p):
-    """matrix_fun   : matrix_function '(' INT ')'"""
+    """matrix_fun   : matrix_function '(' value ')'"""
     p[0] = AST.Function(p[1], p[3])
 
 
@@ -224,19 +222,14 @@ def p_value(p):
                 | INT
                 | FLOAT
                 | element"""
-    try:
-        int(p[1])
+    if isinstance(p[1], int):
         p[0] = AST.IntNum(p[1])
-    except ValueError:
-        try:
-            float(p[1])
-            p[0] = AST.FloatNum(p[1])
-        except ValueError:
-            pattern = re.compile("^[a-zA-Z]+$")
-            if pattern.match(p[1]):
-                p[0] = AST.Variable(p[1])
-            else:
-                p[0] = AST.StringNum(p[1])
+    elif isinstance(p[1], float):
+        p[0] = AST.FloatNum(p[1])
+    elif isinstance(p[1], str):
+        p[0] = AST.StringNum(p[1])
+    else:
+        p[0] = AST.Variable(p[1])
 
 
 # If else flow

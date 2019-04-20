@@ -23,3 +23,11 @@ if __name__ == '__main__':
     # Below code shows how to use visitor
     typeChecker = TypeChecker()
     typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
+
+    errors = typeChecker.get_errors()
+
+    if len(errors) > 0:
+        for error in errors:
+            print(error)
+    # else:
+    #     print(ast)
