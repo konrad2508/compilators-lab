@@ -1,10 +1,10 @@
 import AST
 
 
-# typ['+']['int']['float'] = 'float'
 class NodeVisitor(object):
     def __init__(self):
         self.errors = []
+        self.loop = None
 
     def get_errors(self):
         return self.errors
@@ -30,11 +30,29 @@ class TypeChecker(NodeVisitor):
         self.visit(node.left)
         self.visit(node.right)
 
-    def visit_Function(self, node):
-        args = node.args
+    def visit_For(self, node):
+        previousLoop = self.loop
+        self.loop = node
+        self.visit(node.instruction)
+        self.loop = previousLoop
 
-        if not isinstance(args, int):
-            self.errors.append("Error: Function argument must be an integer")
+    def visit_While(self, node):
+        previousLoop = self.loop
+        self.loop = node
+        self.visit(node.instruction)
+        self.loop = previousLoop
+
+    def visit_Function(self, node):
+        if node.fun in ['break', 'continue']:
+            if self.loop is None:
+                self.errors.append("Error: Loop instruction outside of a loop")
+        elif node.fun in ['eye', 'zeros', 'ones']:
+            if isinstance(node.args, AST.ValueChain):
+                for value in node.args.value_list:
+                    if not isinstance(value, int) and not isinstance(value, AST.IntNum):
+                        self.errors.append("Error: Function argument must be an integer")
+            elif not isinstance(node.args, int) and not isinstance(node.args, AST.IntNum):
+                self.errors.append("Error: Function argument must be an integer")
 
     def visit_BinExp(self, node):
         typeLeft = node.left
@@ -80,7 +98,6 @@ class TypeChecker(NodeVisitor):
                     if leftSize[0] != rightSize[1] or leftSize[1] != rightSize[0]:
                         self.errors.append("Error: Matrices sizes should match")
 
-
     def visit_Matrix(self, node):
         return self.visit(node.value)
 
@@ -98,8 +115,15 @@ class TypeChecker(NodeVisitor):
 
         return valueList
 
+    # TODO: MHM YEAYEA
+    def visit_Vector(self, node):
+        pass
+
     def visit_VectorValues(self, node):
         return len(node.array_list)
 
     def visit_Variable(self, node):
+        pass
+
+    def visit_IntNum(self, node):
         pass

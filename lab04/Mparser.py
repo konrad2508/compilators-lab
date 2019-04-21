@@ -100,7 +100,7 @@ def p_element(p):
 # Matrix functions like ZEROS, ...
 
 def p_matrix_fun(p):
-    """matrix_fun   : matrix_function '(' value ')'"""
+    """matrix_fun   : matrix_function '(' value_chain ')'"""
     p[0] = AST.Function(p[1], p[3])
 
 
@@ -192,7 +192,7 @@ def p_object(p):
 def p_basic_function(p):
     """basic_function   : BREAK ';'
                         | CONTINUE ';'
-                        | RETURN value ';'
+                        | RETURN expression ';'
                         | PRINT value_chain ';'"""
     if p[2] == ';':
         p[0] = AST.Function(p[1], None)
