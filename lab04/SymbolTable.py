@@ -2,6 +2,18 @@ class Symbol(object):
     pass
 
 
+class SimpleSymbol(Symbol):
+    def __init__(self, type):
+        self.type = type
+
+
+class MatrixSymbol(Symbol):
+    def __init__(self, type, x, y):
+        self.type = type
+        self.x = x
+        self.y = y
+
+
 class SymbolTable(object):
     def __init__(self, parent, name):
         self.symbols = {}
