@@ -3,9 +3,9 @@ class Symbol(object):
 
 
 class VariableSymbol(Symbol):
-    def __init__(self, name, type):
-        self.name = name
+    def __init__(self, type, value):
         self.type = type
+        self.type = value
 
 
 class SymbolTable(object):

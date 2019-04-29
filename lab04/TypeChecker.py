@@ -5,7 +5,9 @@ from SymbolTable import SymbolTable
 
 types_table = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
-for op in ['+', '-', '*', '/', '%', '<', '>', '<<', '>>', '|', '&', '^', '<=', '>=', '==', '!=']:
+types = ['int', 'float', 'string', 'matrix', 'vector']
+
+for op in ['+', '-', '*', '/', '<', '>', '<=', '>=', '==', '!=']:
     types_table[op]['int']['int'] = 'int'
 
 for op in ['+', '-', '*', '/']:
@@ -19,7 +21,12 @@ for op in ['<', '>', '<=', '>=', '==', '!=']:
     types_table[op]['float']['float'] = 'int'
 
 for op in ['.+', '.-', '.*', './']:
+    types_table[op]['vector']['matrix'] = 'matrix'
+    types_table[op]['matrix']['vector'] = 'matrix'
     types_table[op]['matrix']['matrix'] = 'matrix'
+
+for op in ['+', '*']:
+    types_table[op]['vector']['vector'] = 'vector'
 
 types_table['+']['string']['string'] = 'string'
 types_table['*']['string']['int'] = 'string'
@@ -55,11 +62,16 @@ class TypeChecker(NodeVisitor):
             self.visit(operation)
 
     def visit_Assign(self, node):
-        if isinstance(node.left, AST.Variable):
-            self.table.put(node.left.name, node.right)
+        type = self.visit(node.right)
 
-        self.visit(node.left)
-        self.visit(node.right)
+        try:
+            if type == 'matrix':
+                self.visit(node.right.value)
+        except AttributeError:
+            pass
+
+        if isinstance(node.left, AST.Variable):
+            self.table.put(node.left.name, type)
 
     def visit_For(self, node):
         previousLoop = self.loop
@@ -83,13 +95,15 @@ class TypeChecker(NodeVisitor):
                     try:
                         self.visit(value)
                         value = self.table.get(value.name)
-                        if not isinstance(self.table.get(value.name), AST.IntNum):
+                        if value != 'int':
                             self.errors.append("Error: Function argument must be an integer")
                     except AttributeError:
                         if not isinstance(value, int) and not isinstance(value, AST.IntNum):
                             self.errors.append("Error: Function argument must be an integer")
             elif not isinstance(node.args, int) and not isinstance(node.args, AST.IntNum):
                 self.errors.append("Error: Function argument must be an integer")
+
+            return 'matrix'
 
     def visit_BinExp(self, node):
         nodeLeft = node.left
@@ -101,15 +115,22 @@ class TypeChecker(NodeVisitor):
         if isinstance(nodeRight, AST.Variable):
             nodeRight = self.table.get(node.right.name)
 
-        typeLeft = self.visit(nodeLeft)
-        typeRight = self.visit(nodeRight)
+        if not nodeLeft in types:
+            typeLeft = self.visit(nodeLeft)
+        else:
+            typeLeft = nodeLeft
+
+        if not nodeRight in types:
+            typeRight = self.visit(nodeRight)
+        else:
+            typeRight = nodeRight
 
         type = types_table[op][typeLeft][typeRight]
 
         if type is None:
             self.errors.append("Error: Cannot perform {0} operation between {1} and {2}".format(op, typeLeft, typeRight))
         else:
-            if typeLeft == 'matrix' and typeRight == 'matrix':
+            if (typeLeft == 'matrix' or typeLeft == 'vector') and (typeRight == 'matrix' or typeRight == 'vector'):
                 leftSize = self.visit(nodeLeft.value)
                 rightSize = self.visit(nodeRight.value)
                 if op == '.+' or op == '.-':
@@ -118,6 +139,14 @@ class TypeChecker(NodeVisitor):
                 elif op == '.*' or op == './':
                     if leftSize[0] != rightSize[1] or leftSize[1] != rightSize[0]:
                         self.errors.append("Error: Matrices sizes should match")
+            elif typeLeft == 'vector' and typeRight == 'vector':
+                leftSize = self.visit(nodeLeft.value)
+                rightSize = self.visit(nodeRight.value)
+                if op == '+' or op == '*':
+                    if leftSize[0] != rightSize[0] or leftSize[1] != rightSize[1]:
+                        self.errors.append("Error: Vectors sizes should match")
+
+        return type
 
     def visit_Matrix(self, node):
         return 'matrix'
@@ -136,9 +165,8 @@ class TypeChecker(NodeVisitor):
 
         return valueList
 
-    # TODO: MHM YEAYEA
     def visit_Vector(self, node):
-        pass
+        return 'vector'
 
     def visit_VectorValues(self, node):
         return len(node.array_list)
