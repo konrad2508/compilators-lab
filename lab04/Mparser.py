@@ -229,7 +229,7 @@ def p_value(p):
     elif isinstance(p[1], str):
         p[0] = AST.StringNum(p[1])
     else:
-        p[0] = AST.Variable(p[1])
+        p[0] = p[1]
 
 
 # If else flow

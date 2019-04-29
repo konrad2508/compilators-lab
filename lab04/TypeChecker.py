@@ -1,5 +1,31 @@
+from collections import defaultdict
+
 import AST
 from SymbolTable import SymbolTable
+
+types_table = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
+
+for op in ['+', '-', '*', '/', '%', '<', '>', '<<', '>>', '|', '&', '^', '<=', '>=', '==', '!=']:
+    types_table[op]['int']['int'] = 'int'
+
+for op in ['+', '-', '*', '/']:
+    types_table[op]['int']['float'] = 'float'
+    types_table[op]['float']['int'] = 'float'
+    types_table[op]['float']['float'] = 'float'
+
+for op in ['<', '>', '<=', '>=', '==', '!=']:
+    types_table[op]['int']['float'] = 'int'
+    types_table[op]['float']['int'] = 'int'
+    types_table[op]['float']['float'] = 'int'
+
+for op in ['.+', '.-', '.*', './']:
+    types_table[op]['matrix']['matrix'] = 'matrix'
+
+types_table['+']['string']['string'] = 'string'
+types_table['*']['string']['int'] = 'string'
+
+for op in ['<', '>', '<=', '>=', '==', '!=']:
+    types_table[op]['string']['string'] = 'int'
 
 
 class NodeVisitor(object):
@@ -56,8 +82,8 @@ class TypeChecker(NodeVisitor):
                 for value in node.args.value_list:
                     try:
                         self.visit(value)
-                        value = self.table.get(value.name.name)
-                        if not isinstance(self.table.get(value.name.name), AST.IntNum):
+                        value = self.table.get(value.name)
+                        if not isinstance(self.table.get(value.name), AST.IntNum):
                             self.errors.append("Error: Function argument must be an integer")
                     except AttributeError:
                         if not isinstance(value, int) and not isinstance(value, AST.IntNum):
@@ -66,51 +92,35 @@ class TypeChecker(NodeVisitor):
                 self.errors.append("Error: Function argument must be an integer")
 
     def visit_BinExp(self, node):
-        typeLeft = node.left
-        typeRight = node.right
+        nodeLeft = node.left
+        nodeRight = node.right
         op = node.op
 
-        normalOps = ['+', '-', '*', '/']
-        matrixOps = ['.+', '.-', '.*', './']
+        if isinstance(nodeLeft, AST.Variable):
+            nodeLeft = self.table.get(node.left.name)
+        if isinstance(nodeRight, AST.Variable):
+            nodeRight = self.table.get(node.right.name)
 
-        if isinstance(typeLeft, AST.IntNum) or isinstance(typeLeft, AST.FloatNum):
-            if not isinstance(typeRight, AST.IntNum) or not isinstance(typeRight, AST.FloatNum):
-                self.errors.append("Error: Wrong types of arguments")
-            elif op in matrixOps:
-                self.errors.append("Error: Wrong operator type")
-        elif isinstance(typeLeft, AST.StringNum):
-            if not isinstance(typeRight, AST.Variable):
-                self.errors.append("Error: Wrong types of arguments")
-            elif not op == '-' or not op == '+':
-                self.errors.append("Error: Wrong operator type")
-        elif isinstance(typeLeft, AST.StringNum):
-            if not isinstance(typeRight, AST.StringNum):
-                self.errors.append("Error: Wrong types of arguments")
-            elif not op == '-' or not op == '+':
-                self.errors.append("Error: Wrong operator type")
-        elif isinstance(typeLeft, AST.Vector):
-            if not isinstance(typeRight, AST.Vector):
-                self.errors.append("Error: Wrong types of arguments")
-            elif op in normalOps:
-                self.errors.append("Error: Wrong operator type")
-        elif isinstance(typeLeft, AST.Matrix):
-            if not isinstance(typeRight, AST.Matrix):
-                self.errors.append("Error: Wrong types of arguments")
-            elif op in normalOps:
-                self.errors.append("Error: Wrong operator type")
-            elif isinstance(typeRight, AST.Matrix):
-                leftSize = self.visit(typeLeft)
-                rightSize = self.visit(typeRight)
+        typeLeft = self.visit(nodeLeft)
+        typeRight = self.visit(nodeRight)
 
+        type = types_table[op][typeLeft][typeRight]
+
+        if type is None:
+            self.errors.append("Error: Cannot perform {0} operation between {1} and {2}".format(op, typeLeft, typeRight))
+        else:
+            if typeLeft == 'matrix' and typeRight == 'matrix':
+                leftSize = self.visit(nodeLeft.value)
+                rightSize = self.visit(nodeRight.value)
                 if op == '.+' or op == '.-':
                     if leftSize[0] != rightSize[0] or leftSize[1] != rightSize[1]:
                         self.errors.append("Error: Matrices sizes should match")
-                else:
+                elif op == '.*' or op == './':
                     if leftSize[0] != rightSize[1] or leftSize[1] != rightSize[0]:
                         self.errors.append("Error: Matrices sizes should match")
 
     def visit_Matrix(self, node):
-        return self.visit(node.value)
+        return 'matrix'
 
     def visit_MatrixRows(self, node):
         prevLen = -1
@@ -139,7 +149,10 @@ class TypeChecker(NodeVisitor):
             self.errors.append("Error: Undefined variable")
 
     def visit_IntNum(self, node):
-        pass
+        return 'int'
 
     def visit_FloatNum(self, node):
-        pass
+        return 'float'
+
+    def visit_StringNum(self, node):
+        return 'string'
