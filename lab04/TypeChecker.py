@@ -1,8 +1,10 @@
 import AST
+from SymbolTable import SymbolTable
 
 
 class NodeVisitor(object):
     def __init__(self):
+        self.table = SymbolTable(None, "root")
         self.errors = []
         self.loop = None
 
@@ -27,6 +29,9 @@ class TypeChecker(NodeVisitor):
             self.visit(operation)
 
     def visit_Assign(self, node):
+        if isinstance(node.left, AST.Variable):
+            self.table.put(node.left.name, node.right)
+
         self.visit(node.left)
         self.visit(node.right)
 
@@ -49,8 +54,14 @@ class TypeChecker(NodeVisitor):
         elif node.fun in ['eye', 'zeros', 'ones']:
             if isinstance(node.args, AST.ValueChain):
                 for value in node.args.value_list:
-                    if not isinstance(value, int) and not isinstance(value, AST.IntNum):
-                        self.errors.append("Error: Function argument must be an integer")
+                    try:
+                        self.visit(value)
+                        value = self.table.get(value.name.name)
+                        if not isinstance(self.table.get(value.name.name), AST.IntNum):
+                            self.errors.append("Error: Function argument must be an integer")
+                    except AttributeError:
+                        if not isinstance(value, int) and not isinstance(value, AST.IntNum):
+                            self.errors.append("Error: Function argument must be an integer")
             elif not isinstance(node.args, int) and not isinstance(node.args, AST.IntNum):
                 self.errors.append("Error: Function argument must be an integer")
 
@@ -123,7 +134,12 @@ class TypeChecker(NodeVisitor):
         return len(node.array_list)
 
     def visit_Variable(self, node):
-        pass
+        symbol = self.table.get(node.name)
+        if symbol is None:
+            self.errors.append("Error: Undefined variable")
 
     def visit_IntNum(self, node):
+        pass
+
+    def visit_FloatNum(self, node):
         pass

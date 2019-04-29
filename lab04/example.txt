@@ -1,0 +1,3 @@
+a = zeros(b);
+c = zeros(1.5);
+c = zeros(1.1);
