@@ -184,3 +184,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_StringNum(self, node):
         return 'string'
+
+    def visit_Reference(self, node):
+        self.visit(node.var)
+        # TODO: check wartosci macierzy ktore jakos bysmy trzymali

@@ -2,12 +2,6 @@ class Symbol(object):
     pass
 
 
-class VariableSymbol(Symbol):
-    def __init__(self, type, value):
-        self.type = type
-        self.type = value
-
-
 class SymbolTable(object):
     def __init__(self, parent, name):
         self.symbols = {}
@@ -15,8 +9,8 @@ class SymbolTable(object):
         self.name = name
         pass
 
-    def put(self, name, symbol):
-        self.symbols[name] = symbol
+    def put(self, name, type):
+        self.symbols[name] = type
 
     def get(self, name):
         try:
