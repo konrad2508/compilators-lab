@@ -73,9 +73,9 @@ class TypeChecker(NodeVisitor):
 
             if isinstance(node.left, AST.Variable):
                 if isinstance(type, list):
-                    self.table.put(node.left.name, MatrixSymbol(type[0], type[1], type[2]))
+                    self.table.put(node.left.name, MatrixSymbol(type[0], type[1].value, type[2].value))
                 elif type == 'matrix':
-                    XandY = self.visit(node.right.value)
+                    XandY = self.visit(node.right)
                     self.table.put(node.left.name, MatrixSymbol(type, XandY[0], XandY[1]))
                 else:
                     self.table.put(node.left.name, SimpleSymbol(type))
@@ -115,8 +115,10 @@ class TypeChecker(NodeVisitor):
 
             if len(matrixDim) > 2:
                 self.errors.append("Error: Too many arguments")
-            else:
+            elif len(matrixDim) == 2:
                 return ['matrix', matrixDim[0], matrixDim[1]]
+            else:
+                return ['matrix', matrixDim[0], matrixDim[0]]
 
     def visit_BinExp(self, node):
         nodeLeft = node.left
@@ -142,12 +144,8 @@ class TypeChecker(NodeVisitor):
         if isinstance(nodeRight, AST.Variable):
             nodeRight = self.table.get(node.right.name)
             if nodeRight.type == 'matrix':
-                try:
-                    rightX = nodeRight.x.value
-                    rightY = nodeRight.y.value
-                except AttributeError:
-                    rightX = nodeRight.x
-                    rightY = nodeRight.y
+                rightX = nodeRight.x
+                rightY = nodeRight.y
 
             nodeRight = nodeRight.type
 
@@ -231,5 +229,15 @@ class TypeChecker(NodeVisitor):
         return 'string'
 
     def visit_Reference(self, node):
-        self.visit(node.var)
-        # TODO: check wartosci macierzy ktore jakos bysmy trzymali
+        if len(node.ind.values.index_list) != 2:
+            self.errors.append("Error: Reference should consist of 2 integers")
+            return
+
+        matrixRef = self.table.get(node.var.name)
+
+        if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
+            self.errors.append("Error: Reference outside of the matrix range")
+            return
+
+        return 'int'
+
