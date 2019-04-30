@@ -74,9 +74,18 @@ class TypeChecker(NodeVisitor):
             if isinstance(node.left, AST.Variable):
                 if isinstance(type, list):
                     self.table.put(node.left.name, MatrixSymbol(type[0], type[1].value, type[2].value))
-                elif type == 'matrix':
+                elif type == 'matrix' or type == 'vector':
                     XandY = self.visit(node.right)
-                    self.table.put(node.left.name, MatrixSymbol(type, XandY[0], XandY[1]))
+                    if isinstance(XandY, list):
+                        self.table.put(node.left.name, MatrixSymbol(type, XandY[0], XandY[1]))
+                    else:
+                        if XandY == 'vector':
+                            if isinstance(node.right.value.array_list[0], AST.Vector):
+                                self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
+                                                                            len(node.right.value.array_list[0].value.array_list)))
+                            else:
+                                self.table.put(node.left.name, MatrixSymbol(type, 1, len(node.right.value.array_list)))
+
                 else:
                     self.table.put(node.left.name, SimpleSymbol(type))
 
@@ -132,7 +141,7 @@ class TypeChecker(NodeVisitor):
 
         if isinstance(nodeLeft, AST.Variable):
             nodeLeft = self.table.get(node.left.name)
-            if nodeLeft.type == 'matrix':
+            if nodeLeft.type == 'matrix' or nodeLeft.type == 'vector':
                 try:
                     leftX = nodeLeft.x.value
                     leftY = nodeLeft.y.value
@@ -143,7 +152,7 @@ class TypeChecker(NodeVisitor):
             nodeLeft = nodeLeft.type
         if isinstance(nodeRight, AST.Variable):
             nodeRight = self.table.get(node.right.name)
-            if nodeRight.type == 'matrix':
+            if nodeRight.type == 'matrix' or nodeRight.type == 'vector':
                 rightX = nodeRight.x
                 rightY = nodeRight.y
 
@@ -181,13 +190,11 @@ class TypeChecker(NodeVisitor):
                     if leftX != rightY or leftY != rightX:
                         self.errors.append("Error: Matrices sizes should match")
                         return
-            elif typeLeft == 'vector' and typeRight == 'vector':
-                leftSize = self.visit(nodeLeft.value)
-                rightSize = self.visit(nodeRight.value)
-                if op == '+' or op == '*':
-                    if leftSize[0] != rightSize[0] or leftSize[1] != rightSize[1]:
-                        self.errors.append("Error: Vectors sizes should match")
-                        return
+                elif typeLeft == 'vector' and typeRight == 'vector':
+                    if op == '+' or op == '*':
+                        if leftX != rightX or leftY != rightY:
+                            self.errors.append("Error: Vectors sizes should match")
+                            return
 
         return type
 
