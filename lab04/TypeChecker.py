@@ -54,6 +54,9 @@ class NodeVisitor(object):
 
 
 class TypeChecker(NodeVisitor):
+    def visit_NoneType(self, node):
+        pass
+
     def visit_Start(self, node):
         self.visit(node.rest)
 
@@ -75,11 +78,10 @@ class TypeChecker(NodeVisitor):
                 if isinstance(type, list):
                     self.table.put(node.left.name, MatrixSymbol(type[0], type[1].value, type[2].value))
                 elif type == 'matrix' or type == 'vector':
-                    XandY = self.visit(node.right)
-                    if isinstance(XandY, list):
-                        self.table.put(node.left.name, MatrixSymbol(type, XandY[0], XandY[1]))
+                    if isinstance(type, list):
+                        self.table.put(node.left.name, MatrixSymbol(type, type[0], type[1]))
                     else:
-                        if XandY == 'vector':
+                        if type == 'vector':
                             if isinstance(node.right.value.array_list[0], AST.Vector):
                                 self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
                                                                             len(node.right.value.array_list[
@@ -203,6 +205,7 @@ class TypeChecker(NodeVisitor):
         return type
 
     def visit_Matrix(self, node):
+        self.visit(node.value)
         return 'matrix'
 
     def visit_MatrixRows(self, node):
@@ -214,6 +217,7 @@ class TypeChecker(NodeVisitor):
                 prevLen = newLen
             elif prevLen != newLen:
                 self.errors.append("(%s, %s) Error: Rows length does not match" % (node.line, node.column))
+                return
 
         valueList = [len(node.array_list), prevLen]
 

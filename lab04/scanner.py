@@ -92,11 +92,11 @@ def t_error(t):
 
 
 def find_tok_line(t):
-    return lexer.lineno
+    return t.lexer.lineno
 
 
 def find_tok_column(t):
-    return lexer.charno
+    return t.lexer.charno
 
 
 lexer = lex.lex()
