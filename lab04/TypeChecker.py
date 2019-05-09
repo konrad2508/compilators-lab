@@ -82,7 +82,8 @@ class TypeChecker(NodeVisitor):
                         if XandY == 'vector':
                             if isinstance(node.right.value.array_list[0], AST.Vector):
                                 self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
-                                                                            len(node.right.value.array_list[0].value.array_list)))
+                                                                            len(node.right.value.array_list[
+                                                                                    0].value.array_list)))
                             else:
                                 self.table.put(node.left.name, MatrixSymbol(type, 1, len(node.right.value.array_list)))
 
@@ -104,7 +105,7 @@ class TypeChecker(NodeVisitor):
     def visit_Function(self, node):
         if node.fun in ['break', 'continue']:
             if self.loop is None:
-                self.errors.append("Error: Loop instruction outside of a loop")
+                self.errors.append("(%s, %s) Error: Loop instruction outside of a loop" % (node.line, node.column))
         elif node.fun in ['eye', 'zeros', 'ones']:
             matrixDim = []
 
@@ -115,15 +116,17 @@ class TypeChecker(NodeVisitor):
                         self.visit(value)
                         value = self.table.get(value.name).type
                         if value != 'int':
-                            self.errors.append("Error: Function argument must be an integer")
+                            self.errors.append(
+                                "(%s, %s) Error: Function argument must be an integer" % (node.line, node.column))
                     except AttributeError:
                         if not isinstance(value, int) and not isinstance(value, AST.IntNum):
-                            self.errors.append("Error: Function argument must be an integer")
+                            self.errors.append(
+                                "(%s, %s) Error: Function argument must be an integer" % (node.line, node.column))
             elif not isinstance(node.args, int) and not isinstance(node.args, AST.IntNum):
-                self.errors.append("Error: Function argument must be an integer")
+                self.errors.append("(%s, %s) Error: Function argument must be an integer" % (node.line, node.column))
 
             if len(matrixDim) > 2:
-                self.errors.append("Error: Too many arguments")
+                self.errors.append("(%s, %s) Error: Too many arguments" % (node.line, node.column))
             elif len(matrixDim) == 2:
                 return ['matrix', matrixDim[0], matrixDim[1]]
             else:
@@ -171,7 +174,8 @@ class TypeChecker(NodeVisitor):
         type = types_table[op][typeLeft][typeRight]
 
         if type is None:
-            self.errors.append("Error: Cannot perform {0} operation between {1} and {2}".format(op, typeLeft, typeRight))
+            self.errors.append("(%s, %s) Error: Cannot perform %s operation between %s and %s" % (
+                node.line, node.column, op, typeLeft, typeRight))
         else:
             if (typeLeft == 'matrix' or typeLeft == 'vector') and (typeRight == 'matrix' or typeRight == 'vector'):
                 if leftX == 0 and leftY == 0:
@@ -184,16 +188,16 @@ class TypeChecker(NodeVisitor):
                     rightY = rightSize[1]
                 if op == '.+' or op == '.-':
                     if leftX != rightX or leftY != rightY:
-                        self.errors.append("Error: Matrices sizes should match")
+                        self.errors.append("(%s, %s) Error: Matrices sizes should match" % (node.line, node.column))
                         return
                 elif op == '.*' or op == './':
                     if leftX != rightY or leftY != rightX:
-                        self.errors.append("Error: Matrices sizes should match")
+                        self.errors.append("(%s, %s) Error: Matrices sizes should match" % (node.line, node.column))
                         return
                 elif typeLeft == 'vector' and typeRight == 'vector':
                     if op == '+' or op == '*':
                         if leftX != rightX or leftY != rightY:
-                            self.errors.append("Error: Vectors sizes should match")
+                            self.errors.append("(%s, %s) Error: Vectors sizes should match" % (node.line, node.column))
                             return
 
         return type
@@ -209,7 +213,7 @@ class TypeChecker(NodeVisitor):
             if prevLen == -1:
                 prevLen = newLen
             elif prevLen != newLen:
-                self.errors.append("Error: Rows length does not match")
+                self.errors.append("(%s, %s) Error: Rows length does not match" % (node.line, node.column))
 
         valueList = [len(node.array_list), prevLen]
 
@@ -224,7 +228,7 @@ class TypeChecker(NodeVisitor):
     def visit_Variable(self, node):
         symbol = self.table.get(node.name).type
         if symbol is None:
-            self.errors.append("Error: Undefined variable")
+            self.errors.append("(%s, %s) Error: Undefined variable" % (node.line, node.column))
 
     def visit_IntNum(self, node):
         return 'int'
@@ -237,14 +241,13 @@ class TypeChecker(NodeVisitor):
 
     def visit_Reference(self, node):
         if len(node.ind.values.index_list) != 2:
-            self.errors.append("Error: Reference should consist of 2 integers")
+            self.errors.append("(%s, %s) Error: Reference should consist of 2 integers" % (node.line, node.column))
             return
 
         matrixRef = self.table.get(node.var.name)
 
         if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
-            self.errors.append("Error: Reference outside of the matrix range")
+            self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
             return
 
         return 'int'
-
