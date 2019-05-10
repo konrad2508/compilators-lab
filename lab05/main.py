@@ -29,5 +29,6 @@ if __name__ == '__main__':
         if len(errors) > 0:
             for error in errors:
                 print(error)
-
-        # ast.accept(Interpreter())
+        else:
+            interpreter = Interpreter()
+            interpreter.visit(ast)

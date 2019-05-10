@@ -14,6 +14,10 @@ class Interpreter(object):
     def visit(self, node):
         pass
 
+    @when(AST.Start)
+    def visit(self, node):
+        pass
+
     @when(AST.BinExp)
     def visit(self, node):
         r1 = node.left.accept(self)
@@ -27,10 +31,6 @@ class Interpreter(object):
     def visit(self, node):
         pass
 
-    #
-    #
-
-    # simplistic while loop interpretation
     @when(AST.While)
     def visit(self, node):
         r = None
