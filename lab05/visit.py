@@ -20,7 +20,7 @@ def when(param_type):
   # dispatcher is an function object
   def f(fn):
     frame = inspect.currentframe().f_back
-    dispatcher = frame.f_locals[fn.func_name]
+    dispatcher = frame.f_locals[fn.__name__]
     if not isinstance(dispatcher, Dispatcher):
       dispatcher = dispatcher.dispatcher
     dispatcher.add_target(param_type, fn)
@@ -47,7 +47,7 @@ class Dispatcher(object):
     else:
       issub = issubclass
       t = self.targets
-      ks = t.iterkeys()
+      ks = iter(t.keys())
       return [ t[k](*args, **kw) for k in ks if issub(typ, k) ]
 
   def add_target(self, typ, target):

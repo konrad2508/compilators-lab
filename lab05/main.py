@@ -4,7 +4,6 @@ import Mparser
 from TypeChecker import TypeChecker
 from Interpreter import Interpreter
 
-
 if __name__ == '__main__':
 
     try:
@@ -21,12 +20,14 @@ if __name__ == '__main__':
 
     ast = parser.parse(text, lexer=scanner.lexer)
 
-    # Below code shows how to use visitor
-    typeChecker = TypeChecker()
-    typeChecker.visit(ast)   # or alternatively ast.accept(typeChecker)
+    if ast is not None:
+        typeChecker = TypeChecker()
+        typeChecker.visit(ast)
 
-    ast.accept(Interpreter())
-    # in future
-    # ast.accept(OptimizationPass1())
-    # ast.accept(OptimizationPass2())
-    # ast.accept(CodeGenerator())
+        errors = typeChecker.get_errors()
+
+        if len(errors) > 0:
+            for error in errors:
+                print(error)
+
+        # ast.accept(Interpreter())

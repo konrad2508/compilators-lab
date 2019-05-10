@@ -14,7 +14,7 @@ class Interpreter(object):
     def visit(self, node):
         pass
 
-    @when(AST.BinOp)
+    @when(AST.BinExp)
     def visit(self, node):
         r1 = node.left.accept(self)
         r2 = node.right.accept(self)
@@ -23,7 +23,7 @@ class Interpreter(object):
         # elsif(node.op=='-') ...
         # but do not use python eval
 
-    @when(AST.Assignment)
+    @when(AST.Assign)
     def visit(self, node):
         pass
 
@@ -31,7 +31,7 @@ class Interpreter(object):
     #
 
     # simplistic while loop interpretation
-    @when(AST.WhileInstr)
+    @when(AST.While)
     def visit(self, node):
         r = None
         while node.cond.accept(self):
