@@ -1,9 +1,11 @@
+import sys
+
 import AST
 import SymbolTable
+
 from Memory import *
 from Exceptions import *
 from visit import *
-import sys
 
 sys.setrecursionlimit(10000)
 
