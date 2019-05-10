@@ -16,7 +16,12 @@ class Interpreter(object):
 
     @when(AST.Start)
     def visit(self, node):
-        pass
+        self.visit(node.rest)
+
+    @when(AST.Operations)
+    def visit(self, node):
+        for operation in node.operations:
+            self.visit(operation)
 
     @when(AST.BinExp)
     def visit(self, node):
