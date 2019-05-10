@@ -4,7 +4,7 @@ class Memory:
         self.vars = {}
 
     def __contains__(self, item):  # variable name
-        return True if item in self.vars else False
+        return item in self.vars
 
     def get(self, name):  # gets from memory current value of variable <name>
         return self.vars[name]
