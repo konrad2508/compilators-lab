@@ -4,7 +4,7 @@ M = 20;
 while(N > 0){
     N -= 1;
     if (N > 8) continue;
-    else if (N == 5) break;
+    else if (N == 5) return 20.5;
 
     print N;
 }

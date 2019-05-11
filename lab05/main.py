@@ -3,6 +3,7 @@ import ply.yacc as yacc
 import Mparser
 from TypeChecker import TypeChecker
 from Interpreter import Interpreter
+from Exceptions import ReturnValueException
 
 if __name__ == '__main__':
 
@@ -31,4 +32,7 @@ if __name__ == '__main__':
                 print(error)
         else:
             interpreter = Interpreter()
-            interpreter.visit(ast)
+            try:
+                interpreter.visit(ast)
+            except ReturnValueException as e:
+                print('Returned value: %s' % str(e.value))

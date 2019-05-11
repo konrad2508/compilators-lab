@@ -141,7 +141,7 @@ class Interpreter(object):
         elif node.fun == 'continue':
             raise ContinueException()
         elif node.fun == 'return':
-            raise Exception('Implement me :(')
+            raise ReturnValueException(self.visit(node.args))
 
     @when(AST.ValueChain)
     def visit(self, node):
@@ -152,6 +152,10 @@ class Interpreter(object):
         return node.value
 
     @when(AST.StringNum)
+    def visit(self, node):
+        return node.value
+
+    @when(AST.FloatNum)
     def visit(self, node):
         return node.value
 
