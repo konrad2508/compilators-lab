@@ -21,6 +21,10 @@ class Interpreter(object):
     def visit(self, node):
         pass
 
+    @when(AST.Node)
+    def visit(self, node):
+        raise Exception('Not implemented Interpreter.visit for %s' % node.__class__.__name__)
+
     @when(AST.Start)
     def visit(self, node):
         self.visit(node.rest)
@@ -34,6 +38,8 @@ class Interpreter(object):
     def visit(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
+
+        # classical operations
         if node.op == '+':
             return left + right
         elif node.op == '-':
@@ -42,6 +48,8 @@ class Interpreter(object):
             return left * right
         elif node.op == '/':
             return left / right
+
+        # element-wise operations
         elif node.op == '.+':
             dotted = []
             for (left_x, right_x) in zip(left, right):
@@ -94,11 +102,6 @@ class Interpreter(object):
                         to_add.append(left_y / right_y)
                     dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
-
-        # try sth smarter than:
-        # if(node.op=='+') return r1+r2
-        # elsif(node.op=='-') ...
-        # but do not use python eval
 
     @when(AST.Assign)
     def visit(self, node):
