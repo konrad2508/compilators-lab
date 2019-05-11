@@ -299,3 +299,16 @@ class TypeChecker(NodeVisitor):
             self.errors.append(
                 "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
             return
+
+    def visit_IfElse(self, node):
+        self.visit(node.condition)
+        self.visit(node.then)
+
+    def visit_Condition(self, node):
+        left_value = self.visit(node.left)
+        right_value = self.visit(node.right)
+        if isinstance(node.left, AST.Variable) and left_value is None:
+            self.errors.append("(%s, %s) Error: Variable not initialized" % (node.line, node.column))
+
+        if isinstance(node.right, AST.Variable) and right_value is None:
+            self.errors.append("(%s, %s) Error: Variable not initialized" % (node.line, node.column))
