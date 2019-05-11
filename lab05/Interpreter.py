@@ -41,13 +41,25 @@ class Interpreter(object):
         elif node.op == '/':
             return left / right
         elif node.op == '.+':
-            raise Exception('Not implemented!')
+            dotted = []
+            for (left_x, right_x) in zip(left, right):
+                dotted.append(left_x + right_x)
+            return dotted
         elif node.op == '.-':
-            raise Exception('Not implemented!')
+            dotted = []
+            for (left_x, right_x) in zip(left, right):
+                dotted.append(left_x - right_x)
+            return dotted
         elif node.op == '.*':
-            raise Exception('Not implemented!')
+            dotted = []
+            for (left_x, right_x) in zip(left, right):
+                dotted.append(left_x * right_x)
+            return dotted
         elif node.op == './':
-            raise Exception('Not implemented!')
+            dotted = []
+            for (left_x, right_x) in zip(left, right):
+                dotted.append(left_x / right_x)
+            return dotted
 
         # try sth smarter than:
         # if(node.op=='+') return r1+r2
