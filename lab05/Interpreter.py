@@ -190,6 +190,14 @@ class Interpreter(object):
         elif node.op == '!=':
             return left != right
 
+    @when(AST.While)
+    def visit(self, node):
+        while self.visit(node.condition):
+            self.memory.push(Memory('IfElseScope'))
+            self.visit(node.instruction)
+            self.memory.pop()
+
+
     # @when(AST.While)
     # def visit(self, node):
     #     r = None
