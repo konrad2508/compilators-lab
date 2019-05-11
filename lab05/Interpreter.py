@@ -136,6 +136,12 @@ class Interpreter(object):
             for arg in self.visit(node.args):
                 print(arg, end=' ')
             print()
+        elif node.fun == 'break':
+            raise BreakException()
+        elif node.fun == 'continue':
+            raise ContinueException()
+        elif node.fun == 'return':
+            raise Exception('Implement me :(')
 
     @when(AST.ValueChain)
     def visit(self, node):
@@ -197,9 +203,14 @@ class Interpreter(object):
     @when(AST.While)
     def visit(self, node):
         while self.visit(node.condition):
-            self.memory.push(Memory('IfElseScope'))
-            self.visit(node.instruction)
-            self.memory.pop()
+            try:
+                self.memory.push(Memory('WhileScope'))
+                self.visit(node.instruction)
+                self.memory.pop()
+            except BreakException:
+                break
+            except ContinueException:
+                pass
 
     @when(AST.For)
     def visit(self, node):
@@ -213,8 +224,13 @@ class Interpreter(object):
             step = 1
 
         for i in range(r[0], r[1], step):
-            self.memory.set(node.var, i)
-            self.visit(node.instruction)
+            try:
+                self.memory.set(node.var, i)
+                self.visit(node.instruction)
+            except BreakException:
+                break
+            except ContinueException:
+                pass
 
         self.memory.pop()
 
