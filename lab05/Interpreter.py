@@ -70,7 +70,7 @@ class Interpreter(object):
                 new_val = left_val - right
             elif node.op == '*=':
                 new_val = left_val * right
-            else:
+            elif node.op == '/=':
                 new_val = left_val / right
             self.memory.set(left_name, new_val)
 
@@ -91,6 +91,15 @@ class Interpreter(object):
     @when(AST.IntNum)
     def visit(self, node):
         return node.value
+
+    @when(AST.Vector)
+    def visit(self, node):
+        return self.visit(node.value)
+
+    @when(AST.VectorValues)
+    def visit(self, node):
+        visited_list = list(map(self.visit, node.array_list))
+        return visited_list
 
     @when(AST.While)
     def visit(self, node):
