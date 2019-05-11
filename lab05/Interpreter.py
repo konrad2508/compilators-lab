@@ -1,4 +1,6 @@
 import sys
+import numpy
+import itertools
 
 import AST
 import SymbolTable
@@ -43,22 +45,54 @@ class Interpreter(object):
         elif node.op == '.+':
             dotted = []
             for (left_x, right_x) in zip(left, right):
-                dotted.append(left_x + right_x)
+                to_add = []
+                try:
+                    for (left_y, right_y) in zip(left_x, right_x):
+                        to_add.append(left_y + right_y)
+                    dotted.append(to_add)
+                except TypeError:
+                    for (left_y, right_y) in zip([left_x], [right_x]):
+                        to_add.append(left_y + right_y)
+                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
         elif node.op == '.-':
             dotted = []
             for (left_x, right_x) in zip(left, right):
-                dotted.append(left_x - right_x)
+                to_add = []
+                try:
+                    for (left_y, right_y) in zip(left_x, right_x):
+                        to_add.append(left_y - right_y)
+                    dotted.append(to_add)
+                except TypeError:
+                    for (left_y, right_y) in zip([left_x], [right_x]):
+                        to_add.append(left_y - right_y)
+                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
         elif node.op == '.*':
             dotted = []
             for (left_x, right_x) in zip(left, right):
-                dotted.append(left_x * right_x)
+                to_add = []
+                try:
+                    for (left_y, right_y) in zip(left_x, right_x):
+                        to_add.append(left_y * right_y)
+                    dotted.append(to_add)
+                except TypeError:
+                    for (left_y, right_y) in zip([left_x], [right_x]):
+                        to_add.append(left_y * right_y)
+                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
         elif node.op == './':
             dotted = []
             for (left_x, right_x) in zip(left, right):
-                dotted.append(left_x / right_x)
+                to_add = []
+                try:
+                    for (left_y, right_y) in zip(left_x, right_x):
+                        to_add.append(left_y / right_y)
+                    dotted.append(to_add)
+                except TypeError:
+                    for (left_y, right_y) in zip([left_x], [right_x]):
+                        to_add.append(left_y / right_y)
+                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
 
         # try sth smarter than:
@@ -94,7 +128,8 @@ class Interpreter(object):
     def visit(self, node):
         if node.fun == 'print':
             for arg in self.visit(node.args):
-                print(arg)
+                print(arg, end=' ')
+            print()
 
     @when(AST.ValueChain)
     def visit(self, node):
@@ -112,6 +147,14 @@ class Interpreter(object):
     def visit(self, node):
         visited_list = list(map(self.visit, node.array_list))
         return visited_list
+
+    @when(AST.Matrix)
+    def visit(self, node):
+        return self.visit(node.value)
+
+    @when(AST.MatrixRows)
+    def visit(self, node):
+        return list(map(self.visit, node.array_list))
 
     @when(AST.While)
     def visit(self, node):
