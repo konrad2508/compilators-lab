@@ -165,8 +165,12 @@ class Interpreter(object):
     @when(AST.IfElse)
     def visit(self, node):
         if self.visit(node.condition):
-            self.memory.push(Memory('IfXScope'))
+            self.memory.push(Memory('IfThenScope'))
             self.visit(node.then)
+            self.memory.pop()
+        elif node.else_then is not None:
+            self.memory.push(Memory('IfElseScope'))
+            self.visit(node.else_then)
             self.memory.pop()
 
     @when(AST.Condition)

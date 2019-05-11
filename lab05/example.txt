@@ -1,6 +1,7 @@
-x = 69;
-y = 5;
-if (y > 4) {
-    x = 20;
+k = 10;
+
+if (k > 11){
+    print 20;
+} else {
+    print 10;
 }
-print x;
