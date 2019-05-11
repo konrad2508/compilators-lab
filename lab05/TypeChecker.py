@@ -21,12 +21,12 @@ for op in ['<', '>', '<=', '>=', '==', '!=']:
     types_table[op]['float']['float'] = 'int'
 
 for op in ['.+', '.-', '.*', './']:
+    types_table[op]['vector']['vector'] = 'vector'
     types_table[op]['vector']['matrix'] = 'matrix'
     types_table[op]['matrix']['vector'] = 'matrix'
     types_table[op]['matrix']['matrix'] = 'matrix'
-
-for op in ['+', '*']:
-    types_table[op]['vector']['vector'] = 'vector'
+    types_table[op]['matrix']['int'] = 'matrix'
+    types_table[op]['int']['matrix'] = 'matrix'
 
 types_table['+']['string']['string'] = 'string'
 types_table['*']['string']['int'] = 'string'
@@ -117,9 +117,13 @@ class TypeChecker(NodeVisitor):
                     try:
                         self.visit(value)
                         value = self.table.get(value.name).type
-                        if value != 'int':
+                        if value is not None:
+                            if value != 'int':
+                                self.errors.append(
+                                    "(%s, %s) Error: Function argument must be an integer" % (node.line, node.column))
+                        else:
                             self.errors.append(
-                                "(%s, %s) Error: Function argument must be an integer" % (node.line, node.column))
+                                "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
                     except AttributeError:
                         if not isinstance(value, int) and not isinstance(value, AST.IntNum):
                             self.errors.append(
@@ -133,6 +137,19 @@ class TypeChecker(NodeVisitor):
                 return ['matrix', matrixDim[0], matrixDim[1]]
             else:
                 return ['matrix', matrixDim[0], matrixDim[0]]
+        elif node.fun == 'print':
+            for value in node.args.value_list:
+                value = self.visit(value)
+                if value is None:
+                    self.errors.append(
+                        "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
+        else:
+            try:
+                if self.table.get(node.args.name) is None:
+                    self.errors.append(
+                        "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
+            except AttributeError:
+                type = self.visit(node.args)
 
     def visit_BinExp(self, node):
         nodeLeft = node.left
@@ -146,23 +163,35 @@ class TypeChecker(NodeVisitor):
 
         if isinstance(nodeLeft, AST.Variable):
             nodeLeft = self.table.get(node.left.name)
-            if nodeLeft.type == 'matrix' or nodeLeft.type == 'vector':
-                try:
-                    leftX = nodeLeft.x.value
-                    leftY = nodeLeft.y.value
-                except AttributeError:
-                    leftX = nodeLeft.x
-                    leftY = nodeLeft.y
+            if nodeLeft is not None:
+                if nodeLeft.type == 'matrix' or nodeLeft.type == 'vector':
+                    try:
+                        leftX = nodeLeft.x.value
+                        leftY = nodeLeft.y.value
+                    except AttributeError:
+                        leftX = nodeLeft.x
+                        leftY = nodeLeft.y
 
-            nodeLeft = nodeLeft.type
+                nodeLeft = nodeLeft.type
+            else:
+                self.errors.append(
+                    "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
         if isinstance(nodeRight, AST.Variable):
             nodeRight = self.table.get(node.right.name)
-            if nodeRight.type == 'matrix' or nodeRight.type == 'vector':
-                rightX = nodeRight.x
-                rightY = nodeRight.y
 
-            nodeRight = nodeRight.type
+            if nodeRight is not None:
+                if nodeRight.type == 'matrix' or nodeRight.type == 'vector':
+                    try:
+                        rightX = nodeRight.x.value
+                        rightY = nodeRight.y.value
+                    except AttributeError:
+                        rightX = nodeRight.x
+                        rightY = nodeRight.y
 
+                nodeRight = nodeRight.type
+            else:
+                self.errors.append(
+                    "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
         if not nodeLeft in types:
             typeLeft = self.visit(nodeLeft)
         else:
@@ -230,9 +259,7 @@ class TypeChecker(NodeVisitor):
         return len(node.array_list)
 
     def visit_Variable(self, node):
-        symbol = self.table.get(node.name).type
-        if symbol is None:
-            self.errors.append("(%s, %s) Error: Undefined variable" % (node.line, node.column))
+        return self.table.get(node.name)
 
     def visit_IntNum(self, node):
         return 'int'
@@ -249,9 +276,13 @@ class TypeChecker(NodeVisitor):
             return
 
         matrixRef = self.table.get(node.var.name)
+        if matrixRef is not None:
+            if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
+                self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
+                return
 
-        if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
-            self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
+            return 'int'
+        else:
+            self.errors.append(
+                "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
             return
-
-        return 'int'
