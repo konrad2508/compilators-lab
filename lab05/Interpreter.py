@@ -108,7 +108,10 @@ class Interpreter(object):
         if node.op == '=':
             left = node.left.name
             right = self.visit(node.right)
-            self.memory.insert(left, right)
+            if self.memory.get(left) is not None:
+                self.memory.set(left, right)
+            else:
+                self.memory.insert(left, right)
         else:
             left_name = node.left.name
             left_val = self.visit(node.left)
@@ -159,9 +162,33 @@ class Interpreter(object):
     def visit(self, node):
         return list(map(self.visit, node.array_list))
 
-    @when(AST.While)
+    @when(AST.IfElse)
     def visit(self, node):
-        r = None
-        while node.cond.accept(self):
-            r = node.body.accept(self)
-        return r
+        if self.visit(node.condition):
+            self.memory.push(Memory('IfXScope'))
+            self.visit(node.then)
+            self.memory.pop()
+
+    @when(AST.Condition)
+    def visit(self, node):
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        if node.op == '>':
+            return left > right
+        elif node.op == '>=':
+            return left >= right
+        elif node.op == '<':
+            return left < right
+        elif node.op == '<=':
+            return left <= right
+        elif node.op == '==':
+            return left == right
+        elif node.op == '!=':
+            return left != right
+
+    # @when(AST.While)
+    # def visit(self, node):
+    #     r = None
+    #     while node.cond.accept(self):
+    #         r = node.body.accept(self)
+    #     return r
