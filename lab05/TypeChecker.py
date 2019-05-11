@@ -107,9 +107,13 @@ class TypeChecker(NodeVisitor):
 
     def visit_For(self, node):
         previousLoop = self.loop
+        self.table.put(node.var, SimpleSymbol('int'))
+
         self.loop = node
         self.visit(node.instruction)
         self.loop = previousLoop
+
+        self.table.remove(node.var)
 
     def visit_While(self, node):
         previousLoop = self.loop

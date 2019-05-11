@@ -197,10 +197,33 @@ class Interpreter(object):
             self.visit(node.instruction)
             self.memory.pop()
 
+    @when(AST.For)
+    def visit(self, node):
+        self.memory.push(Memory('ForScope'))
+        r = self.visit(node.range)
+        self.memory.insert(node.var, -1)
 
-    # @when(AST.While)
-    # def visit(self, node):
-    #     r = None
-    #     while node.cond.accept(self):
-    #         r = node.body.accept(self)
-    #     return r
+        if r[0] > r[1]:
+            step = -1
+        else:
+            step = 1
+
+        for i in range(r[0], r[1], step):
+            self.memory.set(node.var, i)
+            self.visit(node.instruction)
+
+        self.memory.pop()
+
+    @when(AST.Range)
+    def visit(self, node):
+        if isinstance(node.start, int):
+            start = node.start
+        else:
+            start = self.memory.get(node.start)
+
+        if isinstance(node.end, int):
+            end = node.end
+        else:
+            end = self.memory.get(node.end)
+
+        return start, end

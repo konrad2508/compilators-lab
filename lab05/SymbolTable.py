@@ -31,6 +31,9 @@ class SymbolTable(object):
         except KeyError:
             return None
 
+    def remove(self, name):
+        del self.symbols[name]
+
     def getGlobal(self, name):
         s = self.get(name)
         if s is None:
