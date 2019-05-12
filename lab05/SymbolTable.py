@@ -22,7 +22,10 @@ class SymbolTable(object):
         pass
 
     def put(self, name, type):
-        self.symbols[name] = type
+        if self.parent is not None and self.get(name) is not None:
+            self.parent.put(name, type)
+        else:
+            self.symbols[name] = type
 
     def get(self, name):
         try:

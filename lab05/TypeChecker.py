@@ -129,18 +129,27 @@ class TypeChecker(NodeVisitor):
 
     def visit_For(self, node):
         previousLoop = self.loop
+
+        parent = self.table
+        self.table = SymbolTable(parent, "ForScope")
+
         self.table.put(node.var, SimpleSymbol('int'))
 
         self.loop = node
         self.visit(node.instruction)
         self.loop = previousLoop
 
-        self.table.remove(node.var)
+        self.table = parent
 
     def visit_While(self, node):
         previousLoop = self.loop
         self.loop = node
+
+        parent = self.table
+        self.table = SymbolTable(parent, "WhileScope")
         self.visit(node.instruction)
+        self.table = parent
+
         self.loop = previousLoop
 
     def visit_Function(self, node):
@@ -355,7 +364,13 @@ class TypeChecker(NodeVisitor):
 
     def visit_IfElse(self, node):
         self.visit(node.condition)
+
+        parent = self.table
+        self.table = SymbolTable(parent, "IfXScope")
+
         self.visit(node.then)
+
+        self.table = parent
 
     def visit_Condition(self, node):
         left_value = self.visit(node.left)

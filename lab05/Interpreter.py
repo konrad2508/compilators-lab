@@ -1,9 +1,6 @@
 import sys
-import operator
 
 import AST
-import SymbolTable
-
 from utils import recursive_map
 from Memory import *
 from Exceptions import *
