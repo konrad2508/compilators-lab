@@ -249,3 +249,19 @@ class Interpreter(object):
             end = self.memory.get(node.end)
 
         return start, end
+
+    @when(AST.Reference)
+    def visit(self, node):
+        v = self.visit(node.var)
+        for i in self.visit(node.ind):
+            v = v[i]
+        return v
+
+    @when(AST.IndexChain)
+    def visit(self, node):
+        return self.visit(node.values)
+
+    @when(AST.Index)
+    def visit(self, node):
+        for i in node.index_list:
+            yield i
