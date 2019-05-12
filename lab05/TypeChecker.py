@@ -22,11 +22,11 @@ for op in ['<', '>', '<=', '>=', '==', '!=']:
 
 for op in ['.+', '.-', '.*', './']:
     types_table[op]['vector']['vector'] = 'vector'
-    types_table[op]['vector']['matrix'] = 'matrix'
-    types_table[op]['matrix']['vector'] = 'matrix'
     types_table[op]['matrix']['matrix'] = 'matrix'
     types_table[op]['matrix']['int'] = 'matrix'
-    types_table[op]['int']['matrix'] = 'matrix'
+    types_table[op]['vector']['int'] = 'vector'
+    types_table[op]['matrix']['float'] = 'matrix'
+    types_table[op]['vector']['float'] = 'vector'
 
 types_table['+']['string']['string'] = 'string'
 types_table['*']['string']['int'] = 'string'

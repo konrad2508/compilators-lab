@@ -51,57 +51,69 @@ class Interpreter(object):
 
         # element-wise operations
         elif node.op == '.+':
-            dotted = []
-            for (left_x, right_x) in zip(left, right):
-                to_add = []
-                try:
-                    for (left_y, right_y) in zip(left_x, right_x):
-                        to_add.append(left_y + right_y)
-                    dotted.append(to_add)
-                except TypeError:
-                    for (left_y, right_y) in zip([left_x], [right_x]):
-                        to_add.append(left_y + right_y)
-                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
-            return dotted
+            if isinstance(right, int):
+                return recursive_map(lambda x: x + right, left)
+            else:
+                dotted = []
+                for (left_x, right_x) in zip(left, right):
+                    to_add = []
+                    try:
+                        for (left_y, right_y) in zip(left_x, right_x):
+                            to_add.append(left_y + right_y)
+                        dotted.append(to_add)
+                    except TypeError:
+                        for (left_y, right_y) in zip([left_x], [right_x]):
+                            to_add.append(left_y + right_y)
+                        dotted.append(to_add if len(to_add) > 1 else to_add[0])
+                return dotted
         elif node.op == '.-':
-            dotted = []
-            for (left_x, right_x) in zip(left, right):
-                to_add = []
-                try:
-                    for (left_y, right_y) in zip(left_x, right_x):
-                        to_add.append(left_y - right_y)
-                    dotted.append(to_add)
-                except TypeError:
-                    for (left_y, right_y) in zip([left_x], [right_x]):
-                        to_add.append(left_y - right_y)
-                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
-            return dotted
+            if isinstance(right, int):
+                return recursive_map(lambda x: x - right, left)
+            else:
+                dotted = []
+                for (left_x, right_x) in zip(left, right):
+                    to_add = []
+                    try:
+                        for (left_y, right_y) in zip(left_x, right_x):
+                            to_add.append(left_y - right_y)
+                        dotted.append(to_add)
+                    except TypeError:
+                        for (left_y, right_y) in zip([left_x], [right_x]):
+                            to_add.append(left_y - right_y)
+                        dotted.append(to_add if len(to_add) > 1 else to_add[0])
+                return dotted
         elif node.op == '.*':
-            dotted = []
-            for (left_x, right_x) in zip(left, right):
-                to_add = []
-                try:
-                    for (left_y, right_y) in zip(left_x, right_x):
-                        to_add.append(left_y * right_y)
-                    dotted.append(to_add)
-                except TypeError:
-                    for (left_y, right_y) in zip([left_x], [right_x]):
-                        to_add.append(left_y * right_y)
-                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
-            return dotted
+            if isinstance(right, int):
+                return recursive_map(lambda x: x * right, left)
+            else:
+                dotted = []
+                for (left_x, right_x) in zip(left, right):
+                    to_add = []
+                    try:
+                        for (left_y, right_y) in zip(left_x, right_x):
+                            to_add.append(left_y * right_y)
+                        dotted.append(to_add)
+                    except TypeError:
+                        for (left_y, right_y) in zip([left_x], [right_x]):
+                            to_add.append(left_y * right_y)
+                        dotted.append(to_add if len(to_add) > 1 else to_add[0])
+                return dotted
         elif node.op == './':
-            dotted = []
-            for (left_x, right_x) in zip(left, right):
-                to_add = []
-                try:
-                    for (left_y, right_y) in zip(left_x, right_x):
-                        to_add.append(left_y / right_y)
-                    dotted.append(to_add)
-                except TypeError:
-                    for (left_y, right_y) in zip([left_x], [right_x]):
-                        to_add.append(left_y / right_y)
-                    dotted.append(to_add if len(to_add) > 1 else to_add[0])
-            return dotted
+            if isinstance(right, int):
+                return recursive_map(lambda x: x / right, left)
+            else:
+                dotted = []
+                for (left_x, right_x) in zip(left, right):
+                    to_add = []
+                    try:
+                        for (left_y, right_y) in zip(left_x, right_x):
+                            to_add.append(left_y / right_y)
+                        dotted.append(to_add)
+                    except TypeError:
+                        for (left_y, right_y) in zip([left_x], [right_x]):
+                            to_add.append(left_y / right_y)
+                        dotted.append(to_add if len(to_add) > 1 else to_add[0])
+                return dotted
 
     @when(AST.UniExp)
     def visit(self, node):
