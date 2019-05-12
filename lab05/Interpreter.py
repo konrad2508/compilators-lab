@@ -115,8 +115,7 @@ class Interpreter(object):
                 return -operand
 
         elif op == "'":
-            pass
-
+            return list(map(list, zip(*operand)))
 
     @when(AST.Assign)
     def visit(self, node):
