@@ -1,8 +1,10 @@
 import sys
+import operator
 
 import AST
 import SymbolTable
 
+from utils import recursive_map
 from Memory import *
 from Exceptions import *
 from visit import *
@@ -100,6 +102,21 @@ class Interpreter(object):
                         to_add.append(left_y / right_y)
                     dotted.append(to_add if len(to_add) > 1 else to_add[0])
             return dotted
+
+    @when(AST.UniExp)
+    def visit(self, node):
+        op = node.op
+        operand = self.visit(node.value)
+
+        if op == '-':
+            if isinstance(operand, list):
+                return recursive_map(lambda x: -x, operand)
+            else:
+                return -operand
+
+        elif op == "'":
+            pass
+
 
     @when(AST.Assign)
     def visit(self, node):

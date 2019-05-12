@@ -1,2 +1,3 @@
-a = 2 * 2 + 2;
-print a;
+A = 20;
+B = -A;
+print B;

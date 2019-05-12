@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 import AST
-from SymbolTable import SymbolTable, SimpleSymbol, MatrixSymbol
+from SymbolTable import SymbolTable, SimpleSymbol, MatrixSymbol, Symbol
 
 types_table = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
@@ -33,6 +33,13 @@ types_table['*']['string']['int'] = 'string'
 
 for op in ['<', '>', '<=', '>=', '==', '!=']:
     types_table[op]['string']['string'] = 'int'
+
+types_table['unary']['-']['int'] = 'int'
+types_table['unary']['-']['float'] = 'float'
+types_table['unary']['-']['matrix'] = 'matrix'
+types_table['unary']['-']['vector'] = 'vector'
+
+types_table['unary']["'"]['matrix'] = 'matrix'
 
 
 class NodeVisitor(object):
@@ -87,6 +94,9 @@ class TypeChecker(NodeVisitor):
                             if isinstance(node.right, AST.BinExp):
                                 left_vec = self.table.get(node.right.left.name)
                                 self.table.put(node.left.name, MatrixSymbol(type, left_vec.x, left_vec.y))
+                            elif isinstance(node.right, AST.UniExp):
+                                mat = self.table.get(node.right.value.name)
+                                self.table.put(node.left.name, MatrixSymbol(type, 1, mat.y))
                             elif isinstance(node.right.value.array_list[0], AST.Vector):
                                 self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
                                                                             len(node.right.value.array_list[
@@ -98,6 +108,9 @@ class TypeChecker(NodeVisitor):
                             if isinstance(node.right, AST.BinExp):
                                 left_mat = self.table.get(node.right.left.name)
                                 self.table.put(node.left.name, MatrixSymbol(type, left_mat.x, left_mat.y))
+                            elif isinstance(node.right, AST.UniExp):
+                                mat = self.table.get(node.right.value.name)
+                                self.table.put(node.left.name, MatrixSymbol(type, mat.x, mat.y))
                             else:
                                 self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
                                                                             len(node.right.value.array_list[
@@ -250,6 +263,24 @@ class TypeChecker(NodeVisitor):
                             return
 
         return type
+
+    def visit_UniExp(self, node):
+        op = node.op
+        operand = self.visit(node.value)
+
+        if isinstance(operand, Symbol):
+            operand = operand.type
+
+        ret_type = types_table['unary'][op][operand]
+
+        if types_table['unary'][op][operand] is None:
+            self.errors.append("(%s, %s) Error: Cannot perform %s unary operation for %s" % (
+                node.line, node.column, op, operand))
+            return
+
+        return ret_type
+
+
 
     def visit_Matrix(self, node):
         self.visit(node.value)
