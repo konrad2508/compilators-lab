@@ -146,6 +146,15 @@ class Interpreter(object):
                     to_add = [0] * dim
                     to_ret.append(to_add)
                 return to_ret
+            else:
+                dim_x = args[0]
+                dim_y = args[1]
+                to_ret = []
+                for _ in range(0, dim_x):
+                    to_add = [0] * dim_y
+                    to_ret.append(to_add)
+                return to_ret
+
         elif node.fun == 'ones':
             args = self.visit(node.args)
             if len(args) == 1:
@@ -153,6 +162,14 @@ class Interpreter(object):
                 to_ret = []
                 for _ in range(0, dim):
                     to_add = [1] * dim
+                    to_ret.append(to_add)
+                return to_ret
+            else:
+                dim_x = args[0]
+                dim_y = args[1]
+                to_ret = []
+                for _ in range(0, dim_x):
+                    to_add = [1] * dim_y
                     to_ret.append(to_add)
                 return to_ret
         elif node.fun == 'eye':
@@ -163,6 +180,16 @@ class Interpreter(object):
                 for i in range(0, dim):
                     to_add = [0] * dim
                     to_add[i] = 1
+                    to_ret.append(to_add)
+                return to_ret
+            else:
+                dim_x = args[0]
+                dim_y = args[1]
+                to_ret = []
+                for i in range(0, dim_x):
+                    to_add = [0] * dim_y
+                    if i < dim_y:
+                        to_add[i] = 1
                     to_ret.append(to_add)
                 return to_ret
 
