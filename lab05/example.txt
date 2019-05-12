@@ -1,3 +1,2 @@
-A = eye(5,3);
-
-print A;
+a = 2 * 2 + 2;
+print a;

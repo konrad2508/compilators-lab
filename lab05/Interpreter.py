@@ -136,7 +136,7 @@ class Interpreter(object):
                 print(arg, end=' ')
             print()
 
-        #matrix functions
+        # matrix functions
         elif node.fun == 'zeros':
             args = self.visit(node.args)
             if len(args) == 1:

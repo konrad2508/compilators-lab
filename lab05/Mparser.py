@@ -308,19 +308,26 @@ def p_un_expr(p):
 
 
 def p_bin_expr(p):
-    """bin_expr : expression bin_op expression"""
+    """bin_expr : expression '+' expression
+                | expression '-' expression
+                | expression '*' expression
+                | expression '/' expression
+                | expression DOTADD expression
+                | expression DOTSUB expression
+                | expression DOTMUL expression
+                | expression DOTDIV expression"""
     p[0] = AST.BinExp(p[1], p[2], p[3], line=scanner.find_tok_line(p), column=scanner.find_tok_column(p))
 
 
 # Binary operators
 
-def p_bin_op(p):
-    """bin_op   : '+'
-                | '-'
-                | '*'
-                | '/'
-                | DOTADD
-                | DOTSUB
-                | DOTMUL
-                | DOTDIV"""
-    p[0] = p[1]
+# def p_bin_op(p):
+#     """bin_op   : '+'
+#                 | '-'
+#                 | '*'
+#                 | '/'
+#                 | DOTADD
+#                 | DOTSUB
+#                 | DOTMUL
+#                 | DOTDIV"""
+#     p[0] = p[1]
