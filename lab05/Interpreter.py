@@ -1,6 +1,4 @@
 import sys
-import numpy
-import itertools
 
 import AST
 import SymbolTable
