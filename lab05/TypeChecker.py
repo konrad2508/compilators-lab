@@ -100,7 +100,8 @@ class TypeChecker(NodeVisitor):
                                 self.table.put(node.left.name, MatrixSymbol(type, left_mat.x, left_mat.y))
                             else:
                                 self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
-                                                                        len(node.right.value.array_list[0].array_list)))
+                                                                            len(node.right.value.array_list[
+                                                                                    0].array_list)))
 
                 else:
                     self.table.put(node.left.name, SimpleSymbol(type))
@@ -288,17 +289,26 @@ class TypeChecker(NodeVisitor):
         return 'string'
 
     def visit_Reference(self, node):
-        if len(node.ind.values.index_list) != 2:
-            self.errors.append("(%s, %s) Error: Reference should consist of 2 integers" % (node.line, node.column))
+        matrixRef = self.table.get(node.var.name)
+        if matrixRef.type == 'vector' and len(node.ind.values.index_list) != 1:
+            self.errors.append(
+                "(%s, %s) Error: Reference to a vector should consist of 1 integer" % (node.line, node.column))
+            return
+        elif matrixRef.type == 'matrix' and len(node.ind.values.index_list) != 2:
+            self.errors.append("(%s, %s) Error: Reference to a matrix should consist of 2 integers" % (node.line, node.column))
             return
 
-        matrixRef = self.table.get(node.var.name)
         if matrixRef is not None:
-            if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
+            if matrixRef.type == 'vector' and node.ind.values.index_list[0] >= matrixRef.y:
+                self.errors.append("(%s, %s) Error: Reference outside of the vector range" % (node.line, node.column))
+                return
+            elif matrixRef.type == 'matrix' and (node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y):
                 self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
                 return
-
-            return 'int'
+            else:
+                # TODO
+                # should it always return int?
+                return 'int'
         else:
             self.errors.append(
                 "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
