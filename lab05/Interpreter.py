@@ -130,10 +130,43 @@ class Interpreter(object):
 
     @when(AST.Function)
     def visit(self, node):
+        # normal functions
         if node.fun == 'print':
             for arg in self.visit(node.args):
                 print(arg, end=' ')
             print()
+
+        #matrix functions
+        elif node.fun == 'zeros':
+            args = self.visit(node.args)
+            if len(args) == 1:
+                dim = args[0]
+                to_ret = []
+                for _ in range(0, dim):
+                    to_add = [0] * dim
+                    to_ret.append(to_add)
+                return to_ret
+        elif node.fun == 'ones':
+            args = self.visit(node.args)
+            if len(args) == 1:
+                dim = args[0]
+                to_ret = []
+                for _ in range(0, dim):
+                    to_add = [1] * dim
+                    to_ret.append(to_add)
+                return to_ret
+        elif node.fun == 'eye':
+            args = self.visit(node.args)
+            if len(args) == 1:
+                dim = args[0]
+                to_ret = []
+                for i in range(0, dim):
+                    to_add = [0] * dim
+                    to_add[i] = 1
+                    to_ret.append(to_add)
+                return to_ret
+
+        # control flow functions
         elif node.fun == 'break':
             raise BreakException()
         elif node.fun == 'continue':
