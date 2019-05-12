@@ -20,6 +20,10 @@ class Operations(Node):
         self.operations.extend(other.operations)
 
 
+class ScopedOperations(Operations):
+    pass
+
+
 class IntNum(Node):
     def __init__(self, value, line=None, column=None):
         super().__init__(line, column)

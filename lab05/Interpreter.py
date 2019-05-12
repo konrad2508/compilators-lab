@@ -34,6 +34,15 @@ class Interpreter(object):
         for operation in node.operations:
             self.visit(operation)
 
+    @when(AST.ScopedOperations)
+    def visit(self, node):
+        self.memory.push(Memory('Scope'))
+
+        for operation in node.operations:
+            self.visit(operation)
+
+        self.memory.pop()
+
     @when(AST.BinExp)
     def visit(self, node):
         left = self.visit(node.left)

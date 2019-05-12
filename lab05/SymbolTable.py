@@ -29,7 +29,7 @@ class SymbolTable(object):
             s = self.symbols[name]
             return s
         except KeyError:
-            return None
+            return self.parent.get(name) if self.parent is not None else None
 
     def remove(self, name):
         del self.symbols[name]

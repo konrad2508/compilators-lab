@@ -49,7 +49,7 @@ def p_operation(p):
     """operation    : '{' operation_chain '}'
                     | simple_operation"""
     if len(p) > 2:
-        p[0] = p[2]
+        p[0] = AST.ScopedOperations([p[2]], line=scanner.find_tok_line(p), column=scanner.find_tok_column(p))
     else:
         p[0] = p[1]
 

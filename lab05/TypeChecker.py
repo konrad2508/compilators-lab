@@ -71,6 +71,14 @@ class TypeChecker(NodeVisitor):
         for operation in node.operations:
             self.visit(operation)
 
+    def visit_ScopedOperations(self, node):
+        parent = self.table
+        self.table = SymbolTable(parent, "Scope")
+
+        self.visit_Operations(node)
+
+        self.table = parent
+
     def visit_Assign(self, node):
         type = self.visit(node.right)
 
@@ -280,8 +288,6 @@ class TypeChecker(NodeVisitor):
 
         return ret_type
 
-
-
     def visit_Matrix(self, node):
         self.visit(node.value)
         return 'matrix'
@@ -326,14 +332,16 @@ class TypeChecker(NodeVisitor):
                 "(%s, %s) Error: Reference to a vector should consist of 1 integer" % (node.line, node.column))
             return
         elif matrixRef.type == 'matrix' and len(node.ind.values.index_list) != 2:
-            self.errors.append("(%s, %s) Error: Reference to a matrix should consist of 2 integers" % (node.line, node.column))
+            self.errors.append(
+                "(%s, %s) Error: Reference to a matrix should consist of 2 integers" % (node.line, node.column))
             return
 
         if matrixRef is not None:
             if matrixRef.type == 'vector' and node.ind.values.index_list[0] >= matrixRef.y:
                 self.errors.append("(%s, %s) Error: Reference outside of the vector range" % (node.line, node.column))
                 return
-            elif matrixRef.type == 'matrix' and (node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y):
+            elif matrixRef.type == 'matrix' and (
+                    node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y):
                 self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
                 return
             else:
