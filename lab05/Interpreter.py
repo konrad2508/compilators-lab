@@ -9,6 +9,10 @@ from visit import *
 sys.setrecursionlimit(10000)
 
 
+# TODO
+# 1) assignment operations for vector/matrix objects
+# 2) clean code of unnecessary comments/lines
+
 class Interpreter(object):
 
     def __init__(self):
