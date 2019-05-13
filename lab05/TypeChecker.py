@@ -185,13 +185,7 @@ class TypeChecker(NodeVisitor):
                 return ['matrix', matrixDim[0], matrixDim[1]]
             else:
                 return ['matrix', matrixDim[0], matrixDim[0]]
-        elif node.fun == 'print':
-            for value in node.args.value_list:
-                value = self.visit(value)
-                if value is None:
-                    self.errors.append(
-                        "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
-        else:
+        elif node.fun == 'print' or node.fun == 'return':
             try:
                 if self.table.get(node.args.name) is None:
                     self.errors.append(

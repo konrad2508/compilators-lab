@@ -166,9 +166,7 @@ class Interpreter(object):
     def visit(self, node):
         # normal functions
         if node.fun == 'print':
-            for arg in self.visit(node.args):
-                print(arg, end=' ')
-            print()
+            print(self.visit(node.args))
 
         # matrix functions
         elif node.fun == 'zeros':

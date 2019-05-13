@@ -194,7 +194,7 @@ def p_basic_function(p):
     """basic_function   : BREAK ';'
                         | CONTINUE ';'
                         | RETURN expression ';'
-                        | PRINT value_chain ';'"""
+                        | PRINT expression ';'"""
     if p[2] == ';':
         p[0] = AST.Function(p[1], None, line=scanner.find_tok_line(p), column=scanner.find_tok_column(p))
     else:
