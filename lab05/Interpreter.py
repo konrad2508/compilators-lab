@@ -1,7 +1,7 @@
 import sys
 
 import AST
-from utils import recursive_map
+from utils import recursive_map, recursive_modify
 from Memory import *
 from Exceptions import *
 from visit import *
@@ -149,32 +149,66 @@ class Interpreter(object):
     @when(AST.Assign)
     def visit(self, node):
         if node.op == '=':
-            left = node.left.name
-            right = self.visit(node.right)
-            if self.memory.get(left) is not None:
-                self.memory.set(left, right)
+            if isinstance(node.left, AST.Reference):
+                left_name = node.left.var.name
+                left_val = self.memory.get(left_name)
+                right = self.visit(node.right)
+                ids = [i for i in self.visit(node.left.ind)]
+
+                recursive_modify(left_val, ids, right)
+                self.memory.set(left_name, left_val)
             else:
-                self.memory.insert(left, right)
-        else:
-            left_name = node.left.name
-            left_val = self.visit(node.left)
-            right = self.visit(node.right)
-            if node.op == '+=':
-                new_val = left_val + right
-            elif node.op == '-=':
-                new_val = left_val - right
-            elif node.op == '*=':
-                # matrix mul
-                if isinstance(left_val, list) and isinstance(right, list):
-                    zip_b = zip(*right)
-                    zip_b = list(zip_b)
-                    new_val = [[sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
-                             for col_b in zip_b] for row_a in left_val]
+                left = node.left.name
+                right = self.visit(node.right)
+                if self.memory.get(left) is not None:
+                    self.memory.set(left, right)
                 else:
-                    new_val = left_val * right
-            elif node.op == '/=':
-                new_val = left_val / right
-            self.memory.set(left_name, new_val)
+                    self.memory.insert(left, right)
+        else:
+            if isinstance(node.left, AST.Reference):
+                left_name = node.left.var.name
+                left_val = self.memory.get(left_name)
+                left_el_val = self.visit(node.left)
+                right = self.visit(node.right)
+                ids = [i for i in self.visit(node.left.ind)]
+
+                if node.op == '+=':
+                    recursive_modify(left_val, ids, left_el_val + right)
+                elif node.op == '-=':
+                    recursive_modify(left_val, ids, left_el_val - right)
+                elif node.op == '*=':
+                    # matrix mul
+                    if isinstance(left_val, list) and isinstance(right, list):
+                        zip_b = zip(*right)
+                        zip_b = list(zip_b)
+                        new_val = [[sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
+                                    for col_b in zip_b] for row_a in left_el_val]
+                        recursive_modify(left_val, ids, new_val)
+                    else:
+                        recursive_modify(left_val, ids, left_el_val * right)
+                elif node.op == '/=':
+                    recursive_modify(left_val, ids, left_el_val / right)
+                self.memory.set(left_name, left_val)
+            else:
+                left_name = node.left.name
+                left_val = self.visit(node.left)
+                right = self.visit(node.right)
+                if node.op == '+=':
+                    new_val = left_val + right
+                elif node.op == '-=':
+                    new_val = left_val - right
+                elif node.op == '*=':
+                    # matrix mul
+                    if isinstance(left_val, list) and isinstance(right, list):
+                        zip_b = zip(*right)
+                        zip_b = list(zip_b)
+                        new_val = [[sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
+                                    for col_b in zip_b] for row_a in left_val]
+                    else:
+                        new_val = left_val * right
+                elif node.op == '/=':
+                    new_val = left_val / right
+                self.memory.set(left_name, new_val)
 
     @when(AST.Variable)
     def visit(self, node):
