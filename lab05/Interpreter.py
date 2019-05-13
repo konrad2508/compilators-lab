@@ -51,7 +51,14 @@ class Interpreter(object):
         elif node.op == '-':
             return left - right
         elif node.op == '*':
-            return left * right
+            # matrix mul
+            if isinstance(left, list) and isinstance(right, list):
+                zip_b = zip(*right)
+                zip_b = list(zip_b)
+                return [[sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
+                         for col_b in zip_b] for row_a in left]
+            else:
+                return left * right
         elif node.op == '/':
             return left / right
 
@@ -153,7 +160,14 @@ class Interpreter(object):
             elif node.op == '-=':
                 new_val = left_val - right
             elif node.op == '*=':
-                new_val = left_val * right
+                # matrix mul
+                if isinstance(left_val, list) and isinstance(right, list):
+                    zip_b = zip(*right)
+                    zip_b = list(zip_b)
+                    new_val = [[sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
+                             for col_b in zip_b] for row_a in left_val]
+                else:
+                    new_val = left_val * right
             elif node.op == '/=':
                 new_val = left_val / right
             self.memory.set(left_name, new_val)

@@ -28,6 +28,8 @@ for op in ['.+', '.-', '.*', './']:
     types_table[op]['matrix']['float'] = 'matrix'
     types_table[op]['vector']['float'] = 'vector'
 
+types_table['*']['matrix']['matrix'] = 'matrix'
+
 types_table['+']['string']['string'] = 'string'
 types_table['*']['string']['int'] = 'string'
 
