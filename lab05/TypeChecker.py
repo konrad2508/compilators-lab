@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 import AST
-from SymbolTable import SymbolTable, SimpleSymbol, MatrixSymbol
+from SymbolTable import SymbolTable, SimpleSymbol, MatrixSymbol, Symbol
 
 types_table = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
@@ -22,17 +22,26 @@ for op in ['<', '>', '<=', '>=', '==', '!=']:
 
 for op in ['.+', '.-', '.*', './']:
     types_table[op]['vector']['vector'] = 'vector'
-    types_table[op]['vector']['matrix'] = 'matrix'
-    types_table[op]['matrix']['vector'] = 'matrix'
     types_table[op]['matrix']['matrix'] = 'matrix'
     types_table[op]['matrix']['int'] = 'matrix'
-    types_table[op]['int']['matrix'] = 'matrix'
+    types_table[op]['vector']['int'] = 'vector'
+    types_table[op]['matrix']['float'] = 'matrix'
+    types_table[op]['vector']['float'] = 'vector'
+
+types_table['*']['matrix']['matrix'] = 'matrix'
 
 types_table['+']['string']['string'] = 'string'
 types_table['*']['string']['int'] = 'string'
 
 for op in ['<', '>', '<=', '>=', '==', '!=']:
     types_table[op]['string']['string'] = 'int'
+
+types_table['unary']['-']['int'] = 'int'
+types_table['unary']['-']['float'] = 'float'
+types_table['unary']['-']['matrix'] = 'matrix'
+types_table['unary']['-']['vector'] = 'vector'
+
+types_table['unary']["'"]['matrix'] = 'matrix'
 
 
 class NodeVisitor(object):
@@ -64,6 +73,14 @@ class TypeChecker(NodeVisitor):
         for operation in node.operations:
             self.visit(operation)
 
+    def visit_ScopedOperations(self, node):
+        parent = self.table
+        self.table = SymbolTable(parent, "Scope")
+
+        self.visit_Operations(node)
+
+        self.table = parent
+
     def visit_Assign(self, node):
         type = self.visit(node.right)
 
@@ -76,32 +93,63 @@ class TypeChecker(NodeVisitor):
 
             if isinstance(node.left, AST.Variable):
                 if isinstance(type, list):
-                    self.table.put(node.left.name, MatrixSymbol(type[0], type[1].value, type[2].value))
+                    try:
+                        self.table.put(node.left.name, MatrixSymbol(type[0], type[1].value, type[2].value))
+                    except AttributeError:
+                        self.table.put(node.left.name, MatrixSymbol(type[0], type[1], type[2]))
                 elif type == 'matrix' or type == 'vector':
-                    if isinstance(type, list):
-                        self.table.put(node.left.name, MatrixSymbol(type, type[0], type[1]))
-                    else:
-                        if type == 'vector':
-                            if isinstance(node.right.value.array_list[0], AST.Vector):
-                                self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
-                                                                            len(node.right.value.array_list[
-                                                                                    0].value.array_list)))
-                            else:
-                                self.table.put(node.left.name, MatrixSymbol(type, 1, len(node.right.value.array_list)))
+                    if type == 'vector':
+                        if isinstance(node.right, AST.BinExp):
+                            left_vec = self.table.get(node.right.left.name)
+                            self.table.put(node.left.name, MatrixSymbol(type, left_vec.x, left_vec.y))
+                        elif isinstance(node.right, AST.UniExp):
+                            mat = self.table.get(node.right.value.name)
+                            self.table.put(node.left.name, MatrixSymbol(type, 1, mat.y))
+                        elif isinstance(node.right.value.array_list[0], AST.Vector):
+                            self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
+                                                                        len(node.right.value.array_list[
+                                                                                0].value.array_list)))
+                        else:
+                            self.table.put(node.left.name, MatrixSymbol(type, 1, len(node.right.value.array_list)))
+
+                    elif type == 'matrix':
+                        if isinstance(node.right, AST.BinExp):
+                            left_mat = self.table.get(node.right.left.name)
+                            self.table.put(node.left.name, MatrixSymbol(type, left_mat.x, left_mat.y))
+                        elif isinstance(node.right, AST.UniExp):
+                            mat = self.table.get(node.right.value.name)
+                            self.table.put(node.left.name, MatrixSymbol(type, mat.x, mat.y))
+                        else:
+                            self.table.put(node.left.name, MatrixSymbol(type, len(node.right.value.array_list),
+                                                                        len(node.right.value.array_list[
+                                                                                0].array_list)))
 
                 else:
                     self.table.put(node.left.name, SimpleSymbol(type))
 
     def visit_For(self, node):
         previousLoop = self.loop
+
+        parent = self.table
+        self.table = SymbolTable(parent, "ForScope")
+
+        self.table.put(node.var, SimpleSymbol('int'))
+
         self.loop = node
         self.visit(node.instruction)
         self.loop = previousLoop
 
+        self.table = parent
+
     def visit_While(self, node):
         previousLoop = self.loop
         self.loop = node
+
+        parent = self.table
+        self.table = SymbolTable(parent, "WhileScope")
         self.visit(node.instruction)
+        self.table = parent
+
         self.loop = previousLoop
 
     def visit_Function(self, node):
@@ -137,13 +185,7 @@ class TypeChecker(NodeVisitor):
                 return ['matrix', matrixDim[0], matrixDim[1]]
             else:
                 return ['matrix', matrixDim[0], matrixDim[0]]
-        elif node.fun == 'print':
-            for value in node.args.value_list:
-                value = self.visit(value)
-                if value is None:
-                    self.errors.append(
-                        "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
-        else:
+        elif node.fun == 'print' or node.fun == 'return':
             try:
                 if self.table.get(node.args.name) is None:
                     self.errors.append(
@@ -217,14 +259,14 @@ class TypeChecker(NodeVisitor):
                     rightSize = self.visit(nodeRight.value)
                     rightX = rightSize[0]
                     rightY = rightSize[1]
-                if op == '.+' or op == '.-':
+                if op == '.+' or op == '.-' or op == '.*' or op == './':
                     if leftX != rightX or leftY != rightY:
                         self.errors.append("(%s, %s) Error: Matrices sizes should match" % (node.line, node.column))
                         return
-                elif op == '.*' or op == './':
-                    if leftX != rightY or leftY != rightX:
-                        self.errors.append("(%s, %s) Error: Matrices sizes should match" % (node.line, node.column))
-                        return
+                # elif op == '.*' or op == './':
+                #     if leftX != rightY or leftY != rightX:
+                #         self.errors.append("(%s, %s) Error: Matrices sizes should match" % (node.line, node.column))
+                #         return
                 elif typeLeft == 'vector' and typeRight == 'vector':
                     if op == '+' or op == '*':
                         if leftX != rightX or leftY != rightY:
@@ -232,6 +274,29 @@ class TypeChecker(NodeVisitor):
                             return
 
         return type
+
+    def visit_UniExp(self, node):
+        op = node.op
+        operand = self.visit(node.value)
+
+        if isinstance(operand, Symbol):
+            operand = operand.type
+
+        ret_type = types_table['unary'][op][operand]
+
+        if types_table['unary'][op][operand] is None:
+            self.errors.append("(%s, %s) Error: Cannot perform %s unary operation for %s" % (
+                node.line, node.column, op, operand))
+            return
+
+        if isinstance(node.value, AST.BinExp):
+            left = self.visit(node.value.left)
+            try:
+                return [ret_type, left.x, left.y]
+            except AttributeError:
+                return ret_type
+        else:
+            return ret_type
 
     def visit_Matrix(self, node):
         self.visit(node.value)
@@ -271,18 +336,48 @@ class TypeChecker(NodeVisitor):
         return 'string'
 
     def visit_Reference(self, node):
-        if len(node.ind.values.index_list) != 2:
-            self.errors.append("(%s, %s) Error: Reference should consist of 2 integers" % (node.line, node.column))
+        matrixRef = self.table.get(node.var.name)
+        if matrixRef.type == 'vector' and len(node.ind.values.index_list) != 1:
+            self.errors.append(
+                "(%s, %s) Error: Reference to a vector should consist of 1 integer" % (node.line, node.column))
+            return
+        elif matrixRef.type == 'matrix' and len(node.ind.values.index_list) != 2:
+            self.errors.append(
+                "(%s, %s) Error: Reference to a matrix should consist of 2 integers" % (node.line, node.column))
             return
 
-        matrixRef = self.table.get(node.var.name)
         if matrixRef is not None:
-            if node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y:
+            if matrixRef.type == 'vector' and node.ind.values.index_list[0] >= matrixRef.y:
+                self.errors.append("(%s, %s) Error: Reference outside of the vector range" % (node.line, node.column))
+                return
+            elif matrixRef.type == 'matrix' and (
+                    node.ind.values.index_list[0] >= matrixRef.x or node.ind.values.index_list[1] >= matrixRef.y):
                 self.errors.append("(%s, %s) Error: Reference outside of the matrix range" % (node.line, node.column))
                 return
-
-            return 'int'
+            else:
+                # TODO
+                # should it always return int?
+                return 'int'
         else:
             self.errors.append(
                 "(%s, %s) Error: Variable not initialized" % (node.line, node.column))
             return
+
+    def visit_IfElse(self, node):
+        self.visit(node.condition)
+
+        parent = self.table
+        self.table = SymbolTable(parent, "IfXScope")
+
+        self.visit(node.then)
+
+        self.table = parent
+
+    def visit_Condition(self, node):
+        left_value = self.visit(node.left)
+        right_value = self.visit(node.right)
+        if isinstance(node.left, AST.Variable) and left_value is None:
+            self.errors.append("(%s, %s) Error: Variable not initialized" % (node.line, node.column))
+
+        if isinstance(node.right, AST.Variable) and right_value is None:
+            self.errors.append("(%s, %s) Error: Variable not initialized" % (node.line, node.column))

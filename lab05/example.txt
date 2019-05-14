@@ -1,0 +1,61 @@
+A = [1,2,3;4,5,6;7,8,9];
+B = [1,2,3;4,5,6;7,8,9];
+C = A * B;
+print C;
+D = A .+ B;
+print D;
+E = C .- D;
+print E;
+
+N = 5;
+
+for i = 1:N {
+    if(i<N)
+        print i;
+    if(i==N-1)
+        print "Last iteration";
+}
+
+A = "Test";
+
+i = 0;
+N = 5;
+
+print i;
+print N;
+
+while(i<N) {
+    i += 1;
+    if(i == 2)
+        A += "_PEPEGAKONRAD";
+    else
+        A += "_PEPEGA";
+}
+
+print A;
+
+A = zeros(3, 2);
+B = ones(3, 2);
+B *= A;
+print B;
+
+A = 1;
+A = -(A+10);
+print A;
+
+A = [1,2,3;4,5,6;7,8,9];
+B = [1,2,3;4,5,6;7,8,9];
+C = -(A.+B);
+print C;
+
+D = [1,2,[1,2,3;4,5,6;7,8,9],4]
+print D[2];
+E=eye(3);
+D[2] *= E;
+print D;
+
+A = [1,2,3;4,5,6;7,8,9];
+B = [9,8,7;6,5,4;3,2,1];
+C = [0,0,0];
+C[0] = (A[0,1] + B[0,1] * A[2,2]) - (A[1,2] + 50);
+print C;
